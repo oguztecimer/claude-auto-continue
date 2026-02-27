@@ -1,6 +1,6 @@
 {
   "name": "claude-auto-continue",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Automatically resumes Claude Code sessions after usage limits reset",
   "main": "dist/index.js",
   "bin": {
@@ -9,12 +9,14 @@
   },
   "files": [
     "dist/",
-    "bin/"
+    "bin/",
+    "scripts/"
   ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "build": "tsc",
+    "postinstall": "node scripts/postinstall.js",
     "prepublishOnly": "npm run build"
   },
   "engines": {
