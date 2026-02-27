@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-27T09:44:27Z"
+last_updated: "2026-02-27T09:49:00Z"
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 5
+  completed_plans: 5
 ---
 
 # Project State
@@ -23,29 +23,29 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 2 of 4 (Single-Session PTY Wrapper)
-Plan: 1 of 3 in current phase (in progress)
-Status: Phase 2 Plan 1 complete
-Last activity: 2026-02-27 — Completed 02-01 (StdinWriter TDD — 5 tests, 35 total passing)
+Plan: 2 of 3 in current phase (complete)
+Status: Phase 2 Plan 2 complete
+Last activity: 2026-02-27 — Completed 02-02 (ProcessSupervisor TDD — 10 new tests, 45 total passing)
 
-Progress: [████░░░░░░] 33% (4/12 estimated total plans)
+Progress: [█████░░░░░] 42% (5/12 estimated total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 3 min
-- Total execution time: 10 min
+- Total plans completed: 5
+- Average duration: 2.4 min
+- Total execution time: 12 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-detection-engine | 3/3 | 10 min | 3 min |
-| 02-single-session-pty-wrapper | 1/3 | 1 min | 1 min |
+| 02-single-session-pty-wrapper | 2/3 | 3 min | 1.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 2 min, 4 min, 4 min, 1 min
-- Trend: stable ~3 min/plan
+- Last 5 plans: 2 min, 4 min, 4 min, 1 min, 2 min
+- Trend: stable ~2-3 min/plan
 
 *Updated after each plan completion*
 
@@ -72,6 +72,12 @@ Recent decisions affecting current work:
 - [02-01]: EPIPE silently swallowed — race between dead-flag check and pty.write() is expected, not a bug
 - [02-01]: Non-EPIPE errors logged to stderr but not rethrown — prevents crashes while preserving observability
 - [02-01]: import type * as pty (type-only) — avoids runtime node-pty load in StdinWriter itself
+- [02-02]: const enum SessionState (not regular enum) — TypeScript inlines values, no runtime object
+- [02-02]: spawnFn injected via constructor option — avoids vi.mock() module-level magic in tests
+- [02-02]: onExit callback injectable — prevents actual process.exit() from killing test runner
+- [02-02]: LIMIT_DETECTED and RESUMING are transient synchronous states — no timer or await between them and successor state
+- [02-02]: Cooldown uses Date.now() comparison (not a timer) — simpler, no cancel needed, works with fake timers
+- [02-02]: detector.feed() gated on RUNNING state check — WAITING/RESUMING all suppress detection
 
 ### Pending Todos
 
@@ -86,5 +92,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 02-01-PLAN.md (StdinWriter TDD, 2 tasks, 35 tests passing — Phase 2 Plan 1 complete)
+Stopped at: Completed 02-02-PLAN.md (ProcessSupervisor TDD, 2 tasks, 45 tests passing — Phase 2 Plan 2 complete)
 Resume file: None

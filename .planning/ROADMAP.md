@@ -13,7 +13,7 @@ Build a Node.js CLI tool that keeps unattended Claude Code sessions alive across
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Detection Engine** - Configurable rate-limit pattern detection with rolling buffer, ANSI stripping, and timestamp parsing — fully unit-tested with no PTY dependency (3/3 plans complete, DONE 2026-02-27)
-- [ ] **Phase 2: Single-Session PTY Wrapper** - One Claude Code session spawned in a real PTY, detected, waited on, and resumed automatically with EPIPE-safe stdin writing
+- [x] **Phase 2: Single-Session PTY Wrapper** - One Claude Code session spawned in a real PTY, detected, waited on, and resumed automatically with EPIPE-safe stdin writing (completed 2026-02-27)
 - [ ] **Phase 3: Multi-Session and Status Display** - 2-5 concurrent sessions monitored simultaneously, each with independent state and a live per-session status display
 - [ ] **Phase 4: CLI Packaging and Distribution** - Installable npm package with a runnable CLI command and clean user-facing help
 
@@ -74,6 +74,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Detection Engine | 3/3 | Complete | 2026-02-27 |
-| 2. Single-Session PTY Wrapper | 1/2 | In Progress|  |
+| 2. Single-Session PTY Wrapper | 2/2 | Complete   | 2026-02-27 |
 | 3. Multi-Session and Status Display | 0/? | Not started | - |
 | 4. CLI Packaging and Distribution | 0/? | Not started | - |

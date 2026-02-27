@@ -17,8 +17,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Resume
 
-- [ ] **RESM-01**: Tool waits until the parsed reset time before attempting to resume
-- [ ] **RESM-02**: Tool sends "continue" to the paused Claude Code session at reset time
+- [x] **RESM-01**: Tool waits until the parsed reset time before attempting to resume
+- [x] **RESM-02**: Tool sends "continue" to the paused Claude Code session at reset time
 - [ ] **RESM-03**: Tool displays a visible countdown timer while waiting for reset
 - [x] **RESM-04**: Tool handles EPIPE errors gracefully if Claude Code process dies during wait
 
@@ -31,8 +31,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Infrastructure
 
-- [ ] **INFR-01**: Tool spawns Claude Code via node-pty (required — Claude Code hangs without real TTY)
-- [ ] **INFR-02**: Tool passes through Claude Code I/O transparently to the user's terminal
+- [x] **INFR-01**: Tool spawns Claude Code via node-pty (required — Claude Code hangs without real TTY)
+- [x] **INFR-02**: Tool passes through Claude Code I/O transparently to the user's terminal
 - [ ] **INFR-03**: Tool is installable via npm and runnable as a CLI command
 
 ## v2 Requirements
@@ -69,16 +69,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DETC-03 | Phase 1 | Done (01-02) |
 | DETC-04 | Phase 1 | Done (01-02) |
 | DETC-05 | Phase 1 | Done (01-01) |
-| RESM-01 | Phase 2 | Pending |
-| RESM-02 | Phase 2 | Pending |
+| RESM-01 | Phase 2 | Complete |
+| RESM-02 | Phase 2 | Complete |
 | RESM-03 | Phase 3 | Pending |
 | RESM-04 | Phase 2 | Complete |
 | MULT-01 | Phase 3 | Pending |
 | MULT-02 | Phase 3 | Pending |
 | MULT-03 | Phase 3 | Pending |
 | MULT-04 | Phase 3 | Pending |
-| INFR-01 | Phase 2 | Pending |
-| INFR-02 | Phase 2 | Pending |
+| INFR-01 | Phase 2 | Complete |
+| INFR-02 | Phase 2 | Complete |
 | INFR-03 | Phase 4 | Pending |
 
 **Coverage:**
