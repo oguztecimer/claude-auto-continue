@@ -135,10 +135,25 @@ function main(): void {
   // Countdown timer handle
   let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
+  // Debounced status bar re-render after PTY output.
+  // Claude Code's TUI resets the scroll region and overwrites row 1.
+  // After output settles, re-assert the scroll region and redraw the bar.
+  let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+  const scheduleBarRefresh = () => {
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(() => {
+      refreshTimer = null;
+      process.stdout.write(statusBar.initScrollRegion(rows()));
+      const currentState = supervisor.state as string;
+      process.stdout.write(statusBar.render(currentState, { cwd }));
+    }, 50);
+  };
+
   // Create supervisor with output routed through the standard handler
   const supervisor = new ProcessSupervisor({
     onOutput: (data: string) => {
       process.stdout.write(data);
+      scheduleBarRefresh();
     },
   });
 
@@ -207,6 +222,10 @@ function main(): void {
 
   // Terminal cleanup on all exit paths
   const cleanup = () => {
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+      refreshTimer = null;
+    }
     if (countdownInterval) {
       clearInterval(countdownInterval);
       countdownInterval = null;
