@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-4 (shipped 2026-02-27)
-- 🚧 **v1.0 npm Publishing** — Phases 5-8 (in progress)
+- ✅ **v1.0 npm Publishing** — Phases 5-8 (shipped 2026-02-27)
 
 ## Phases
 
@@ -17,14 +17,14 @@
 
 </details>
 
-### 🚧 v1.0 npm Publishing (In Progress)
+### ✅ v1.0 npm Publishing (COMPLETE — 2026-02-27)
 
 **Milestone Goal:** Publish `claude-auto-continue@1.0.0` to the npm registry with a professional README so any Node.js >=18 developer can install and use the tool.
 
 - [x] **Phase 5: Package Preparation** — Edit package.json metadata and write README.md so the package is registry-ready (completed 2026-02-27)
 - [x] **Phase 6: GitHub Hosting** *(user action required)* — Create the GitHub repository and push the codebase (completed 2026-02-27)
-- [ ] **Phase 7: Pre-publish Verification** — Run the pre-publish checklist to confirm tarball, tests, and auth are good before committing to publish
-- [ ] **Phase 8: Publish** *(user action required)* — Execute `npm publish` and confirm the package is live and installable
+- [x] **Phase 7: Pre-publish Verification** — Run the pre-publish checklist to confirm tarball, tests, and auth are good before committing to publish (completed 2026-02-27)
+- [x] **Phase 8: Publish** *(user action required)* — Execute `npm publish` and confirm the package is live and installable (completed 2026-02-27, published v1.0.6)
 
 ## Phase Details
 
@@ -95,5 +95,5 @@ Plans:
 | 4. CLI Packaging and Distribution | v1.0 MVP | 1/1 | Complete | 2026-02-27 |
 | 5. Package Preparation | 2/2 | Complete   | 2026-02-27 | - |
 | 6. GitHub Hosting | 1/1 | Complete   | 2026-02-27 | - |
-| 7. Pre-publish Verification | v1.0 npm Publishing | 0/1 | Not started | - |
-| 8. Publish | v1.0 npm Publishing | 0/1 | Not started | - |
+| 7. Pre-publish Verification | v1.0 npm Publishing | 1/1 | Complete | 2026-02-27 |
+| 8. Publish | v1.0 npm Publishing | 1/1 | Complete | 2026-02-27 |

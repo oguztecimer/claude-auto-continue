@@ -29,8 +29,8 @@ Requirements for npm publishing release. Each maps to roadmap phases.
 ### Publishing
 
 - [ ] **PUBL-01**: Pre-publish verification passes (npm pack --dry-run confirms correct files)
-- [ ] **PUBL-02**: Package published to npm registry as 1.0.0
-- [ ] **PUBL-03**: Post-publish smoke test confirms `npm install -g claude-auto-continue` works
+- [x] **PUBL-02**: Package published to npm registry as 1.0.0
+- [x] **PUBL-03**: Post-publish smoke test confirms `npm install -g claude-auto-continue` works
 
 ## Future Requirements
 
@@ -66,8 +66,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HOST-01 | Phase 6 | Complete |
 | HOST-02 | Phase 6 | Complete |
 | PUBL-01 | Phase 7 | Pending |
-| PUBL-02 | Phase 8 | Pending |
-| PUBL-03 | Phase 8 | Pending |
+| PUBL-02 | Phase 8 | Complete |
+| PUBL-03 | Phase 8 | Complete |
 
 **Coverage:**
 - v1.0 requirements: 13 total
