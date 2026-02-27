@@ -1,0 +1,50 @@
+{
+  "name": "claude-auto-continue",
+  "version": "1.0.0",
+  "description": "Automatically resumes Claude Code sessions after usage limits reset",
+  "main": "dist/index.js",
+  "bin": {
+    "claude-auto-continue": "bin/claude-auto-continue.js",
+    "clac": "bin/claude-auto-continue.js"
+  },
+  "files": [
+    "dist/",
+    "bin/"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "auto-continue",
+    "rate-limit",
+    "cli"
+  ],
+  "author": "dakmor",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oguztecimer/claude-auto-continue.git"
+  },
+  "homepage": "https://github.com/oguztecimer/claude-auto-continue#readme",
+  "bugs": {
+    "url": "https://github.com/oguztecimer/claude-auto-continue/issues"
+  },
+  "dependencies": {
+    "node-pty": "^1.1.0",
+    "strip-ansi": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  }
+}

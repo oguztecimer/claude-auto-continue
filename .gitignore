@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+*.js.map
+
+# Environment / secrets
+.env
+.env.*
+.env.local
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
