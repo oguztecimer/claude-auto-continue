@@ -1,6 +1,5 @@
 import { ProcessSupervisor } from './ProcessSupervisor.js';
 import { StatusBar } from './StatusBar.js';
-import { CountdownCard } from './CountdownCard.js';
 import type { StateChangeEvent } from './ProcessSupervisor.js';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -131,8 +130,6 @@ function main(): void {
 
   // Create display components
   const statusBar = new StatusBar({ cols: cols() });
-  const countdownCard = new CountdownCard({ cols: cols(), rows: rows() });
-
   // Set terminal title to show running status (non-intrusive)
   setTerminalTitle('Running');
 
@@ -171,7 +168,6 @@ function main(): void {
       }
       process.stdout.write(statusBar.initScrollRegion(rows()));
       process.stdout.write(statusBar.render('DEAD', { cwd }));
-      process.stdout.write(countdownCard.clear());
 
       // Wait 5 seconds to show "Dead" status, then cleanup
       setTimeout(() => {
@@ -191,7 +187,6 @@ function main(): void {
       }
       process.stdout.write(statusBar.initScrollRegion(rows()));
       process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
-      process.stdout.write(countdownCard.render({ resetTime, cwd }));
 
       // Start 1-second countdown tick
       countdownInterval = setInterval(() => {
@@ -201,7 +196,6 @@ function main(): void {
           return;
         }
         process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
-        process.stdout.write(countdownCard.render({ resetTime, cwd }));
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING') {
       setTerminalTitle(state === 'RESUMING' ? 'Resuming' : 'Running');
@@ -219,17 +213,12 @@ function main(): void {
   // Handle terminal resize
   process.stdout.on('resize', () => {
     statusBar.cols = cols();
-    countdownCard.cols = cols();
-    countdownCard.rows = rows();
 
     if (ownsTerminal) {
       process.stdout.write('\x1b[2J\x1b[H');
       process.stdout.write(statusBar.initScrollRegion(rows()));
       const currentState = supervisor.state as string;
       process.stdout.write(statusBar.render(currentState, { resetTime: currentResetTime ?? undefined, cwd }));
-      if (currentState === 'WAITING' && currentResetTime) {
-        process.stdout.write(countdownCard.render({ resetTime: currentResetTime, cwd }));
-      }
     }
   });
 
