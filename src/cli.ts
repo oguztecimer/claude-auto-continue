@@ -251,7 +251,8 @@ function main(): void {
     process.exit(143);
   });
 
-  // Resolve claude binary path and spawn
+  // Clear terminal and resolve claude binary path
+  process.stdout.write('\x1b[2J\x1b[H');
   const claudePath = resolveClaudePath();
   supervisor.spawn(claudePath, claudeArgs);
 
