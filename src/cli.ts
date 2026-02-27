@@ -134,7 +134,7 @@ function main(): void {
   const countdownCard = new CountdownCard({ cols: cols(), rows: rows() });
 
   // Set terminal title to show running status (non-intrusive)
-  setTerminalTitle(`clac | Running | ${cwd}`);
+  setTerminalTitle('Running');
 
   // Countdown timer handle
   let countdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -160,7 +160,7 @@ function main(): void {
     }
 
     if (state === 'DEAD') {
-      setTerminalTitle(`clac | Dead | ${cwd}`);
+      setTerminalTitle('Dead');
 
       if (!ownsTerminal) {
         // Take over the terminal for dead state display
@@ -179,7 +179,7 @@ function main(): void {
     }
 
     if (state === 'WAITING' && resetTime) {
-      setTerminalTitle(`clac | Waiting | ${cwd}`);
+      setTerminalTitle('Waiting');
 
       // Take over the terminal for countdown display
       if (!ownsTerminal) {
@@ -201,7 +201,7 @@ function main(): void {
         process.stdout.write(countdownCard.render({ resetTime, cwd }));
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING') {
-      setTerminalTitle(`clac | ${state === 'RESUMING' ? 'Resuming' : 'Running'} | ${cwd}`);
+      setTerminalTitle(state === 'RESUMING' ? 'Resuming' : 'Running');
 
       if (ownsTerminal) {
         // Give terminal back to Claude Code
