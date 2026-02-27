@@ -168,9 +168,8 @@ function main(): void {
 
     if (state === 'DEAD') {
       if (!ownsTerminal) {
-        // Take over the terminal for dead state display
         ownsTerminal = true;
-        process.stdout.write('\x1b[2J\x1b[H');
+        process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
       }
       process.stdout.write(statusBar.initScrollRegion(rows()));
       process.stdout.write(statusBar.render('DEAD', { cwd }));
@@ -186,10 +185,10 @@ function main(): void {
       setTerminalTitle(`${folderName} - Waiting`);
       currentResetTime = resetTime;
 
-      // Take over the terminal for countdown display
+      // Switch to alternate screen buffer to preserve Claude's output
       if (!ownsTerminal) {
         ownsTerminal = true;
-        process.stdout.write('\x1b[2J\x1b[H');
+        process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
       }
       process.stdout.write(statusBar.initScrollRegion(rows()));
       process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
@@ -209,10 +208,10 @@ function main(): void {
       currentResetTime = null;
 
       if (ownsTerminal) {
-        // Give terminal back to Claude Code
+        // Switch back to main screen — restores Claude's output exactly
         ownsTerminal = false;
         process.stdout.write(statusBar.cleanup());
-        process.stdout.write('\x1b[2J\x1b[H');
+        process.stdout.write('\x1b[?1049l');
       }
     }
   });
@@ -237,6 +236,7 @@ function main(): void {
     }
     if (ownsTerminal) {
       process.stdout.write(statusBar.cleanup());
+      process.stdout.write('\x1b[?1049l');
     }
     setTerminalTitle('');
   };

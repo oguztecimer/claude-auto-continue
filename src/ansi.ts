@@ -55,6 +55,11 @@ export function inverse(text: string): string {
 export const showCursor = `${CSI}?25h`;
 export const hideCursor = `${CSI}?25l`;
 
+// --- Alternate screen buffer ---
+
+export const enterAltScreen = `${CSI}?1049h`;
+export const leaveAltScreen = `${CSI}?1049l`;
+
 // --- Reset ---
 
 export const resetAttributes = `${CSI}0m`;
