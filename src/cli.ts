@@ -111,7 +111,6 @@ function setTerminalTitle(title: string): void {
  * Main entry point — wires ProcessSupervisor to the status display.
  */
 function main(): void {
-  process.title = 'clac';
   const args = process.argv.slice(2);
 
   // Handle --help and --version before anything else
@@ -128,11 +127,12 @@ function main(): void {
   const cols = () => process.stdout.columns ?? 80;
   const rows = () => process.stdout.rows ?? 24;
   const cwd = process.cwd();
+  const folderName = cwd.split('/').pop() ?? cwd;
 
   // Create display components
   const statusBar = new StatusBar({ cols: cols() });
   // Set terminal title to show running status (non-intrusive)
-  setTerminalTitle('Running');
+  setTerminalTitle(`${folderName} - Running`);
 
   // Countdown timer handle
   let countdownInterval: ReturnType<typeof setInterval> | null = null;
@@ -160,7 +160,7 @@ function main(): void {
     }
 
     if (state === 'DEAD') {
-      setTerminalTitle('Dead');
+      setTerminalTitle(`${folderName} - Dead`);
 
       if (!ownsTerminal) {
         // Take over the terminal for dead state display
@@ -178,7 +178,7 @@ function main(): void {
     }
 
     if (state === 'WAITING' && resetTime) {
-      setTerminalTitle('Waiting');
+      setTerminalTitle(`${folderName} - Waiting`);
       currentResetTime = resetTime;
 
       // Take over the terminal for countdown display
@@ -199,7 +199,7 @@ function main(): void {
         process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING') {
-      setTerminalTitle(state === 'RESUMING' ? 'Resuming' : 'Running');
+      setTerminalTitle(`${folderName} - ${state === 'RESUMING' ? 'Resuming' : 'Running'}`);
       currentResetTime = null;
 
       if (ownsTerminal) {
