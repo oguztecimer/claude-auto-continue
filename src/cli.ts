@@ -111,6 +111,7 @@ function setTerminalTitle(title: string): void {
  * Main entry point — wires ProcessSupervisor to the status display.
  */
 function main(): void {
+  process.title = 'clac';
   const args = process.argv.slice(2);
 
   // Handle --help and --version before anything else
