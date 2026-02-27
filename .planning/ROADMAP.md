@@ -12,7 +12,7 @@ Build a Node.js CLI tool that keeps unattended Claude Code sessions alive across
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Detection Engine** - Configurable rate-limit pattern detection with rolling buffer, ANSI stripping, and timestamp parsing — fully unit-tested with no PTY dependency
+- [~] **Phase 1: Detection Engine** - Configurable rate-limit pattern detection with rolling buffer, ANSI stripping, and timestamp parsing — fully unit-tested with no PTY dependency (1/3 plans complete)
 - [ ] **Phase 2: Single-Session PTY Wrapper** - One Claude Code session spawned in a real PTY, detected, waited on, and resumed automatically with EPIPE-safe stdin writing
 - [ ] **Phase 3: Multi-Session and Status Display** - 2-5 concurrent sessions monitored simultaneously, each with independent state and a live per-session status display
 - [ ] **Phase 4: CLI Packaging and Distribution** - Installable npm package with a runnable CLI command and clean user-facing help
@@ -29,7 +29,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Given a custom detection regex set via config, the detector uses that pattern instead of the default, allowing format changes to be handled without code edits
   4. The PatternDetector and Scheduler modules have unit tests that pass without spawning any real process or PTY
 **Plans**: 3 plans
-- [ ] 01-01-PLAN.md — Project bootstrap + config loader (Wave 1)
+- [x] 01-01-PLAN.md — Project bootstrap + config loader (Wave 1) — DONE 2026-02-27
 - [ ] 01-02-PLAN.md — PatternDetector TDD (Wave 2)
 - [ ] 01-03-PLAN.md — Scheduler TDD (Wave 2)
 
@@ -71,7 +71,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Detection Engine | 0/3 | Planned | - |
+| 1. Detection Engine | 1/3 | In progress | - |
 | 2. Single-Session PTY Wrapper | 0/? | Not started | - |
 | 3. Multi-Session and Status Display | 0/? | Not started | - |
 | 4. CLI Packaging and Distribution | 0/? | Not started | - |

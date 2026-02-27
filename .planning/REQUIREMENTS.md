@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DETC-02**: Tool parses the reset timestamp from the rate-limit message
 - [ ] **DETC-03**: Tool strips ANSI escape codes before pattern matching to handle colored/styled output
 - [ ] **DETC-04**: Tool uses a rolling buffer to handle chunk boundary splitting (message split across data events)
-- [ ] **DETC-05**: Detection pattern is configurable to handle future Claude Code format changes
+- [x] **DETC-05**: Detection pattern is configurable to handle future Claude Code format changes
 
 ### Resume
 
@@ -68,7 +68,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DETC-02 | Phase 1 | Pending |
 | DETC-03 | Phase 1 | Pending |
 | DETC-04 | Phase 1 | Pending |
-| DETC-05 | Phase 1 | Pending |
+| DETC-05 | Phase 1 | Done (01-01) |
 | RESM-01 | Phase 2 | Pending |
 | RESM-02 | Phase 2 | Pending |
 | RESM-03 | Phase 3 | Pending |

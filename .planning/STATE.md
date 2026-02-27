@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 1 of 4 (Detection Engine)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-02-27 — Roadmap created, all 16 v1 requirements mapped to 4 phases
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-02-27 — Completed 01-01 (project init + config loader)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 8% (1/12 estimated total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 1
+- Average duration: 2 min
+- Total execution time: 2 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-detection-engine | 1/3 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: —
+- Last 5 plans: 2 min
 - Trend: —
 
 *Updated after each plan completion*
@@ -45,10 +45,13 @@ Recent decisions affecting current work:
 - [Roadmap]: node-pty is non-negotiable for Claude Code PTY spawning (hangs without real TTY)
 - [Roadmap]: CommonJS over ESM to avoid node-pty native module interop friction
 - [Roadmap]: PatternDetector and Scheduler built as pure logic modules (no I/O) so they can be unit-tested before any PTY work
+- [01-01]: strip-ansi@6 pinned (not v7) — v7 is ESM-only, incompatible with this CJS project
+- [01-01]: loadConfig() never throws — any error silently returns {} to prevent config issues crashing the process
+- [01-01]: CONFIG_PATH uses os.homedir() — cross-platform Linux/macOS support, never hardcode paths
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
@@ -59,5 +62,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Roadmap written, ready to begin planning Phase 1
+Stopped at: Completed 01-01-PLAN.md (project init + config loader, 2 tasks, 7 tests passing)
 Resume file: None
