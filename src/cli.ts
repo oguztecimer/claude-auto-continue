@@ -141,6 +141,8 @@ function main(): void {
 
   // Track whether we own the terminal (WAITING/DEAD) or Claude Code does (RUNNING)
   let ownsTerminal = false;
+  // Track reset time for resize handler
+  let currentResetTime: Date | null = null;
 
   // Create supervisor with output routed through the standard handler
   const supervisor = new ProcessSupervisor({
@@ -180,6 +182,7 @@ function main(): void {
 
     if (state === 'WAITING' && resetTime) {
       setTerminalTitle('Waiting');
+      currentResetTime = resetTime;
 
       // Take over the terminal for countdown display
       if (!ownsTerminal) {
@@ -202,6 +205,7 @@ function main(): void {
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING') {
       setTerminalTitle(state === 'RESUMING' ? 'Resuming' : 'Running');
+      currentResetTime = null;
 
       if (ownsTerminal) {
         // Give terminal back to Claude Code
@@ -219,9 +223,13 @@ function main(): void {
     countdownCard.rows = rows();
 
     if (ownsTerminal) {
+      process.stdout.write('\x1b[2J\x1b[H');
       process.stdout.write(statusBar.initScrollRegion(rows()));
       const currentState = supervisor.state as string;
-      process.stdout.write(statusBar.render(currentState, { cwd }));
+      process.stdout.write(statusBar.render(currentState, { resetTime: currentResetTime ?? undefined, cwd }));
+      if (currentState === 'WAITING' && currentResetTime) {
+        process.stdout.write(countdownCard.render({ resetTime: currentResetTime, cwd }));
+      }
     }
   });
 
