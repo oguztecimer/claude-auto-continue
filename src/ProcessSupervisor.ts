@@ -180,10 +180,12 @@ export class ProcessSupervisor extends EventEmitter {
 
     // Dismiss the /rate-limit-options interactive menu by selecting option 1
     // ("Stop and wait for limit to reset"). Option 1 is pre-selected, so Enter confirms it.
-    // Small delay lets the menu render before we send the keystroke.
-    setTimeout(() => {
-      this.#writer!.write('\r');
-    }, 500);
+    // Send Enter multiple times — the menu can re-appear after the first selection.
+    for (let i = 0; i < 3; i++) {
+      setTimeout(() => {
+        this.#writer!.write('\r');
+      }, 500 + i * 1000);
+    }
 
     // Schedule the resume callback
     this.#scheduler.scheduleAt(event.resetTime, () => this.#onResumeReady());
