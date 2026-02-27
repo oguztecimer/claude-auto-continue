@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Detection
 
-- [ ] **DETC-01**: Tool detects "Claude usage limit reached" message in Claude Code terminal output
-- [ ] **DETC-02**: Tool parses the reset timestamp from the rate-limit message
-- [ ] **DETC-03**: Tool strips ANSI escape codes before pattern matching to handle colored/styled output
-- [ ] **DETC-04**: Tool uses a rolling buffer to handle chunk boundary splitting (message split across data events)
+- [x] **DETC-01**: Tool detects "Claude usage limit reached" message in Claude Code terminal output
+- [x] **DETC-02**: Tool parses the reset timestamp from the rate-limit message
+- [x] **DETC-03**: Tool strips ANSI escape codes before pattern matching to handle colored/styled output
+- [x] **DETC-04**: Tool uses a rolling buffer to handle chunk boundary splitting (message split across data events)
 - [x] **DETC-05**: Detection pattern is configurable to handle future Claude Code format changes
 
 ### Resume
@@ -64,10 +64,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DETC-01 | Phase 1 | Pending |
-| DETC-02 | Phase 1 | Pending |
-| DETC-03 | Phase 1 | Pending |
-| DETC-04 | Phase 1 | Pending |
+| DETC-01 | Phase 1 | Done (01-02) |
+| DETC-02 | Phase 1 | Done (01-02) |
+| DETC-03 | Phase 1 | Done (01-02) |
+| DETC-04 | Phase 1 | Done (01-02) |
 | DETC-05 | Phase 1 | Done (01-01) |
 | RESM-01 | Phase 2 | Pending |
 | RESM-02 | Phase 2 | Pending |
@@ -88,4 +88,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after roadmap creation — all 16 requirements mapped*
+*Last updated: 2026-02-27 after 01-02 completion — DETC-01 through DETC-04 marked complete*

@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 1 of 4 (Detection Engine)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-27 — Completed 01-01 (project init + config loader)
+Last activity: 2026-02-27 — Completed 01-02 (PatternDetector TDD — 15 tests, all passing)
 
-Progress: [█░░░░░░░░░] 8% (1/12 estimated total plans)
+Progress: [██░░░░░░░░] 17% (2/12 estimated total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 2 min
-- Total execution time: 2 min
+- Total plans completed: 2
+- Average duration: 3 min
+- Total execution time: 6 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-detection-engine | 1/3 | 2 min | 2 min |
+| 01-detection-engine | 2/3 | 6 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 2 min
-- Trend: —
+- Last 5 plans: 2 min, 4 min
+- Trend: slight increase
 
 *Updated after each plan completion*
 
@@ -48,6 +48,9 @@ Recent decisions affecting current work:
 - [01-01]: strip-ansi@6 pinned (not v7) — v7 is ESM-only, incompatible with this CJS project
 - [01-01]: loadConfig() never throws — any error silently returns {} to prevent config issues crashing the process
 - [01-01]: CONFIG_PATH uses os.homedir() — cross-platform Linux/macOS support, never hardcode paths
+- [01-02]: Human-time parsing ignores IANA timezone — parse hour/minute/meridiem only, trust local clock; avoids tz-data dependency
+- [01-02]: reset() clears buffer AND #detected flag — intentional re-arm semantics for retry cycles
+- [01-02]: rawMatch is last 500 chars of buffer — provides context without exposing full history
 
 ### Pending Todos
 
@@ -62,5 +65,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 01-01-PLAN.md (project init + config loader, 2 tasks, 7 tests passing)
+Stopped at: Completed 01-02-PLAN.md (PatternDetector TDD, 2 tasks, 22 tests passing)
 Resume file: None
