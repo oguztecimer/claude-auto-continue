@@ -101,6 +101,14 @@ function resolveClaudePath(): string {
 }
 
 /**
+ * Set the terminal window/tab title via OSC escape sequence.
+ * Works in most terminal emulators without interfering with app content.
+ */
+function setTerminalTitle(title: string): void {
+  process.stdout.write(`\x1b]2;${title}\x07`);
+}
+
+/**
  * Main entry point — wires ProcessSupervisor to the status display.
  */
 function main(): void {
@@ -125,35 +133,19 @@ function main(): void {
   const statusBar = new StatusBar({ cols: cols() });
   const countdownCard = new CountdownCard({ cols: cols(), rows: rows() });
 
-  // Clear terminal and set up scroll region leaving row 1 for status bar
-  process.stdout.write('\x1b[2J\x1b[H');
-  process.stdout.write(statusBar.initScrollRegion(rows()));
-
-  // Initial status bar render
-  process.stdout.write(statusBar.render('RUNNING', { cwd }));
+  // Set terminal title to show running status (non-intrusive)
+  setTerminalTitle(`clac | Running | ${cwd}`);
 
   // Countdown timer handle
   let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
-  // Debounced status bar re-render after PTY output.
-  // Claude Code's TUI resets the scroll region and overwrites row 1.
-  // After output settles, re-assert the scroll region and redraw the bar.
-  let refreshTimer: ReturnType<typeof setTimeout> | null = null;
-  const scheduleBarRefresh = () => {
-    if (refreshTimer) clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(() => {
-      refreshTimer = null;
-      process.stdout.write(statusBar.initScrollRegion(rows()));
-      const currentState = supervisor.state as string;
-      process.stdout.write(statusBar.render(currentState, { cwd }));
-    }, 50);
-  };
+  // Track whether we own the terminal (WAITING/DEAD) or Claude Code does (RUNNING)
+  let ownsTerminal = false;
 
   // Create supervisor with output routed through the standard handler
   const supervisor = new ProcessSupervisor({
     onOutput: (data: string) => {
       process.stdout.write(data);
-      scheduleBarRefresh();
     },
   });
 
@@ -168,69 +160,81 @@ function main(): void {
     }
 
     if (state === 'DEAD') {
-      // Show dead state in status bar, clear countdown card
+      setTerminalTitle(`clac | Dead | ${cwd}`);
+
+      if (!ownsTerminal) {
+        // Take over the terminal for dead state display
+        ownsTerminal = true;
+        process.stdout.write('\x1b[2J\x1b[H');
+      }
+      process.stdout.write(statusBar.initScrollRegion(rows()));
       process.stdout.write(statusBar.render('DEAD', { cwd }));
       process.stdout.write(countdownCard.clear());
 
-      // Wait 5 seconds to show "Dead" status, then cleanup and let exit handler run
+      // Wait 5 seconds to show "Dead" status, then cleanup
       setTimeout(() => {
         process.stdout.write(statusBar.cleanup());
       }, 5000);
       return;
     }
 
-    // Re-render status bar for the current state
-    process.stdout.write(statusBar.render(state, { resetTime: resetTime ?? undefined, cwd }));
-
     if (state === 'WAITING' && resetTime) {
-      // Show centered countdown card
+      setTerminalTitle(`clac | Waiting | ${cwd}`);
+
+      // Take over the terminal for countdown display
+      if (!ownsTerminal) {
+        ownsTerminal = true;
+        process.stdout.write('\x1b[2J\x1b[H');
+      }
+      process.stdout.write(statusBar.initScrollRegion(rows()));
+      process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
       process.stdout.write(countdownCard.render({ resetTime, cwd }));
 
       // Start 1-second countdown tick
       countdownInterval = setInterval(() => {
-        // Race protection: if state has moved on, stop ticking
         if (supervisor.state !== 'WAITING') {
           clearInterval(countdownInterval!);
           countdownInterval = null;
           return;
         }
-
-        // Recalculate from resetTime - Date.now() each tick (no drift)
         process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
         process.stdout.write(countdownCard.render({ resetTime, cwd }));
       }, 1000);
-    } else {
-      // Clear countdown card if it was showing
-      process.stdout.write(countdownCard.clear());
+    } else if (state === 'RUNNING' || state === 'RESUMING') {
+      setTerminalTitle(`clac | ${state === 'RESUMING' ? 'Resuming' : 'Running'} | ${cwd}`);
+
+      if (ownsTerminal) {
+        // Give terminal back to Claude Code
+        ownsTerminal = false;
+        process.stdout.write(statusBar.cleanup());
+        process.stdout.write('\x1b[2J\x1b[H');
+      }
     }
   });
 
   // Handle terminal resize
   process.stdout.on('resize', () => {
-    // Update display component dimensions
     statusBar.cols = cols();
     countdownCard.cols = cols();
     countdownCard.rows = rows();
 
-    // Re-initialize scroll region with new dimensions
-    process.stdout.write(statusBar.initScrollRegion(rows()));
-
-    // Re-render current state
-    const currentState = supervisor.state as string;
-    process.stdout.write(statusBar.render(currentState, { cwd }));
+    if (ownsTerminal) {
+      process.stdout.write(statusBar.initScrollRegion(rows()));
+      const currentState = supervisor.state as string;
+      process.stdout.write(statusBar.render(currentState, { cwd }));
+    }
   });
 
   // Terminal cleanup on all exit paths
   const cleanup = () => {
-    if (refreshTimer) {
-      clearTimeout(refreshTimer);
-      refreshTimer = null;
-    }
     if (countdownInterval) {
       clearInterval(countdownInterval);
       countdownInterval = null;
     }
-    process.stdout.write(statusBar.cleanup());
+    if (ownsTerminal) {
+      process.stdout.write(statusBar.cleanup());
+    }
+    setTerminalTitle('');
   };
 
   process.on('exit', cleanup);
