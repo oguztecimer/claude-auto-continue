@@ -34,6 +34,8 @@ export interface ProcessSupervisorOptions {
   cooldownMs?: number;
   /** Safety buffer added to reset time before resuming. Default: 5000ms */
   safetyMs?: number;
+  /** Override cooldown duration in seconds. When set, ignores parsed reset time. */
+  overrideCooldownSec?: number;
   /** Override process.exit for testing. Default: process.exit */
   onExit?: (code: number) => void;
   /** Override PTY output handler. Default: process.stdout.write */
@@ -56,6 +58,7 @@ export class ProcessSupervisor extends EventEmitter {
   readonly #scheduler: Scheduler;
   readonly #onExitCallback: (code: number) => void;
   readonly #onOutput: (data: string) => void;
+  readonly #overrideCooldownSec: number | undefined;
 
   #state: SessionState = SessionState.RUNNING;
   #writer: StdinWriter | null = null;
@@ -70,6 +73,7 @@ export class ProcessSupervisor extends EventEmitter {
     this.#scheduler = new Scheduler(options.safetyMs ?? 5_000);
     this.#onExitCallback = options.onExit ?? ((code: number) => process.exit(code));
     this.#onOutput = options.onOutput ?? ((data: string) => { process.stdout.write(data); });
+    this.#overrideCooldownSec = options.overrideCooldownSec;
 
     // Listen for rate-limit detections
     this.#detector.on('limit', (event: LimitEvent) => this.#onLimitDetected(event));
@@ -189,7 +193,11 @@ export class ProcessSupervisor extends EventEmitter {
     }
 
     // Schedule the resume callback
-    this.#scheduler.scheduleAt(event.resetTime, () => this.#onResumeReady());
+    const scheduleTime = this.#overrideCooldownSec !== undefined
+      ? new Date(Date.now() + this.#overrideCooldownSec * 1000)
+      : event.resetTime;
+    this.#resetTime = scheduleTime;
+    this.#scheduler.scheduleAt(scheduleTime, () => this.#onResumeReady());
 
     this.#setState(SessionState.WAITING);
   }

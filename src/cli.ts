@@ -124,6 +124,14 @@ function main(): void {
     process.exit(0);
   }
 
+  // Parse --overridecooldown N
+  let overrideCooldownSec: number | undefined;
+  const ocIdx = args.indexOf('--overridecooldown');
+  if (ocIdx !== -1 && args[ocIdx + 1]) {
+    overrideCooldownSec = parseInt(args[ocIdx + 1], 10);
+    if (isNaN(overrideCooldownSec)) overrideCooldownSec = undefined;
+  }
+
   const { claudeArgs } = parseArgs(process.argv);
   const cols = () => process.stdout.columns ?? 80;
   const rows = () => process.stdout.rows ?? 24;
@@ -145,6 +153,7 @@ function main(): void {
     onOutput: (data: string) => {
       process.stdout.write(data);
     },
+    overrideCooldownSec,
   });
 
   // Handle state changes from ProcessSupervisor
@@ -158,8 +167,6 @@ function main(): void {
     }
 
     if (state === 'DEAD') {
-      setTerminalTitle(`${folderName} - Dead`);
-
       if (!ownsTerminal) {
         // Take over the terminal for dead state display
         ownsTerminal = true;
@@ -198,7 +205,7 @@ function main(): void {
         process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING') {
-      setTerminalTitle(`${folderName} - ${state === 'RESUMING' ? 'Resuming' : 'Running'}`);
+      setTerminalTitle('');
       currentResetTime = null;
 
       if (ownsTerminal) {
@@ -248,8 +255,6 @@ function main(): void {
   const claudePath = resolveClaudePath();
   supervisor.spawn(claudePath, claudeArgs);
 
-  // Set terminal title after spawn so Claude Code's init doesn't overwrite it
-  setTimeout(() => setTerminalTitle(`${folderName} - Running`), 2000);
 }
 
 main();
