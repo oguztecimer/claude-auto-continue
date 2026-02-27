@@ -1,6 +1,6 @@
 {
   "name": "claude-auto-continue",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Automatically resumes Claude Code sessions after usage limits reset",
   "main": "dist/index.js",
   "bin": {
