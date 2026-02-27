@@ -160,8 +160,19 @@ export class ProcessSupervisor extends EventEmitter {
     }
 
     // --- Terminal resize forwarding ---
+    // Only forward resizes during RUNNING state to avoid scrambling Claude's
+    // display while the alternate screen (countdown) is active.
     process.stdout.on('resize', () => {
-      ptyProcess.resize(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
+      if (this.#state === SessionState.RUNNING) {
+        ptyProcess.resize(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
+      }
+    });
+
+    // Sync PTY size when returning to RUNNING state (in case terminal was resized during WAITING)
+    this.on('stateChange', (event: { state: string }) => {
+      if (event.state === 'RUNNING') {
+        ptyProcess.resize(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
+      }
     });
   }
 
