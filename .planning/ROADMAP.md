@@ -80,10 +80,10 @@ Plans:
   1. `npm view claude-auto-continue` returns version `1.0.0` with correct author, description, repository, and keywords
   2. `npm install -g claude-auto-continue && claude-auto-continue --help` completes without error in a clean environment
   3. The npm page at `https://www.npmjs.com/package/claude-auto-continue` shows the README with description, install instructions, and how-it-works section
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 08-01: User runs npm publish; verify registry entry; smoke-test install
+- [ ] 08-01: Create npm account, publish to registry, smoke-test install, create GitHub release, clean up planning artifacts
 
 ## Progress
 
