@@ -209,18 +209,23 @@ export class ProcessSupervisor extends EventEmitter {
   #onResumeReady(): void {
     this.#setState(SessionState.RESUMING);
 
-    // Type "continue" and press Enter to resume the session
-    this.#writer!.write('continue\r');
+    // Type "continue" then press Enter after a short delay to resume the session.
+    // Sending as a single write ('continue\r') causes the \r to be treated as part
+    // of the text buffer rather than a discrete Enter keypress.
+    this.#writer!.write('continue');
+    setTimeout(() => {
+      this.#writer!.write('\r');
 
-    // Arm cooldown to suppress the false-positive re-detection that can occur
-    // immediately after resume (Claude Code issue #14129)
-    this.#cooldownUntil = Date.now() + this.#cooldownMs;
+      // Arm cooldown to suppress the false-positive re-detection that can occur
+      // immediately after resume (Claude Code issue #14129)
+      this.#cooldownUntil = Date.now() + this.#cooldownMs;
 
-    // Re-arm the detector for the next potential rate-limit cycle
-    this.#detector.reset();
+      // Re-arm the detector for the next potential rate-limit cycle
+      this.#detector.reset();
 
-    this.#resetTime = null;
-    this.#setState(SessionState.RUNNING);
+      this.#resetTime = null;
+      this.#setState(SessionState.RUNNING);
+    }, 100);
   }
 
   /**
