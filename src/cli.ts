@@ -197,6 +197,7 @@ function main(): void {
           countdownInterval = null;
           return;
         }
+        setTerminalTitle(`${folderName} - Waiting`);
         process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING') {
