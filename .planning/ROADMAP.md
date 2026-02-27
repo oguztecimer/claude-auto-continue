@@ -74,6 +74,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Detection Engine | 3/3 | Complete | 2026-02-27 |
-| 2. Single-Session PTY Wrapper | 0/2 | Not started | - |
+| 2. Single-Session PTY Wrapper | 1/2 | In Progress|  |
 | 3. Multi-Session and Status Display | 0/? | Not started | - |
 | 4. CLI Packaging and Distribution | 0/? | Not started | - |

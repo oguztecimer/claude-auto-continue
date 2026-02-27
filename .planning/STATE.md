@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-02-27T09:28:43.708Z"
+last_updated: "2026-02-27T09:44:27Z"
 progress:
-  total_phases: 1
+  total_phases: 4
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 4
+  completed_plans: 4
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-02-27)
 
 **Core value:** Unattended Claude Code sessions that automatically resume after usage limits reset — no manual babysitting
-**Current focus:** Phase 1 - Detection Engine
+**Current focus:** Phase 2 - Single-Session PTY Wrapper
 
 ## Current Position
 
-Phase: 1 of 4 (Detection Engine)
-Plan: 3 of 3 in current phase (PHASE COMPLETE)
-Status: Phase 1 complete
-Last activity: 2026-02-27 — Completed 01-03 (Scheduler TDD — 8 tests, all passing)
+Phase: 2 of 4 (Single-Session PTY Wrapper)
+Plan: 1 of 3 in current phase (in progress)
+Status: Phase 2 Plan 1 complete
+Last activity: 2026-02-27 — Completed 02-01 (StdinWriter TDD — 5 tests, 35 total passing)
 
-Progress: [███░░░░░░░] 25% (3/12 estimated total plans)
+Progress: [████░░░░░░] 33% (4/12 estimated total plans)
 
 ## Performance Metrics
 
@@ -41,10 +41,11 @@ Progress: [███░░░░░░░] 25% (3/12 estimated total plans)
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-detection-engine | 3/3 | 10 min | 3 min |
+| 02-single-session-pty-wrapper | 1/3 | 1 min | 1 min |
 
 **Recent Trend:**
-- Last 5 plans: 2 min, 4 min, 4 min
-- Trend: stable ~3-4 min/plan
+- Last 5 plans: 2 min, 4 min, 4 min, 1 min
+- Trend: stable ~3 min/plan
 
 *Updated after each plan completion*
 
@@ -68,6 +69,9 @@ Recent decisions affecting current work:
 - [01-03]: Safety buffer defaults to 5000ms (5 seconds) — configurable, accounts for API clock skew
 - [01-03]: #cancelled flag is sticky — once cancelled, scheduleAt() calls are silently ignored
 - [01-03]: Null resetTime fires at 0ms — safe fallback when rate limit timestamp cannot be parsed
+- [02-01]: EPIPE silently swallowed — race between dead-flag check and pty.write() is expected, not a bug
+- [02-01]: Non-EPIPE errors logged to stderr but not rethrown — prevents crashes while preserving observability
+- [02-01]: import type * as pty (type-only) — avoids runtime node-pty load in StdinWriter itself
 
 ### Pending Todos
 
@@ -82,5 +86,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 01-03-PLAN.md (Scheduler TDD, 2 tasks, 30 tests passing — Phase 1 complete)
+Stopped at: Completed 02-01-PLAN.md (StdinWriter TDD, 2 tasks, 35 tests passing — Phase 2 Plan 1 complete)
 Resume file: None
