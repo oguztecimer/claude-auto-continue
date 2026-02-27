@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Detection Engine** - Configurable rate-limit pattern detection with rolling buffer, ANSI stripping, and timestamp parsing — fully unit-tested with no PTY dependency (3/3 plans complete, DONE 2026-02-27)
 - [x] **Phase 2: Single-Session PTY Wrapper** - One Claude Code session spawned in a real PTY, detected, waited on, and resumed automatically with EPIPE-safe stdin writing (completed 2026-02-27)
-- [ ] **Phase 3: Single-Session Status Display** - Live status bar with countdown timer, color-coded state feedback, and auto-exit on session end
+- [x] **Phase 3: Single-Session Status Display** - Live status bar with countdown timer, color-coded state feedback, and auto-exit on session end (completed 2026-02-27)
 - [ ] **Phase 4: CLI Packaging and Distribution** - Installable npm package with a runnable CLI command and clean user-facing help
 
 ## Phase Details
@@ -55,7 +55,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. When waiting for rate-limit reset, a live countdown timer ticks every second showing time remaining and absolute reset time
   3. When all output is waiting, a centered countdown card displays with session name, countdown, and reset time
   4. Claude Code arguments can be passed through via `--` separator (e.g., `claude-auto-continue -- --continue`)
-**Plans**: TBD
+**Plans**: 3 plans
+- [x] 03-01-PLAN.md — StatusBar + ANSI helpers TDD (Wave 1) — DONE 2026-02-27
+- [x] 03-02-PLAN.md — CountdownCard TDD (Wave 1) — DONE 2026-02-27
+- [x] 03-03-PLAN.md — ProcessSupervisor events + CLI entry point (Wave 2) — DONE 2026-02-27
 
 ### Phase 4: CLI Packaging and Distribution
 **Goal**: The tool is installable from npm as a global CLI command that users can invoke directly, with helpful usage output for bad invocations
@@ -75,5 +78,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Detection Engine | 3/3 | Complete | 2026-02-27 |
 | 2. Single-Session PTY Wrapper | 2/2 | Complete   | 2026-02-27 |
-| 3. Single-Session Status Display | 0/? | Not started | - |
+| 3. Single-Session Status Display | 3/3 | Complete    | 2026-02-27 |
 | 4. CLI Packaging and Distribution | 0/? | Not started | - |

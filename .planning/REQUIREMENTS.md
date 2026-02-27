@@ -19,7 +19,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **RESM-01**: Tool waits until the parsed reset time before attempting to resume
 - [x] **RESM-02**: Tool sends "continue" to the paused Claude Code session at reset time
-- [ ] **RESM-03**: Tool displays a visible countdown timer while waiting for reset
+- [x] **RESM-03**: Tool displays a visible countdown timer while waiting for reset
 - [x] **RESM-04**: Tool handles EPIPE errors gracefully if Claude Code process dies during wait
 
 ### Multi-Session
@@ -69,7 +69,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DETC-05 | Phase 1 | Done (01-01) |
 | RESM-01 | Phase 2 | Complete |
 | RESM-02 | Phase 2 | Complete |
-| RESM-03 | Phase 3 | Pending |
+| RESM-03 | Phase 3 | Complete |
 | RESM-04 | Phase 2 | Complete |
 | MULT-01 | — | Out of Scope |
 | MULT-02 | — | Out of Scope |
