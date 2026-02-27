@@ -28,7 +28,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Given PTY output with ANSI escape codes wrapping the rate-limit text, the detector still matches correctly (raw output does not match; stripped output does)
   3. Given a custom detection regex set via config, the detector uses that pattern instead of the default, allowing format changes to be handled without code edits
   4. The PatternDetector and Scheduler modules have unit tests that pass without spawning any real process or PTY
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Project bootstrap + config loader (Wave 1)
+- [ ] 01-02-PLAN.md — PatternDetector TDD (Wave 2)
+- [ ] 01-03-PLAN.md — Scheduler TDD (Wave 2)
 
 ### Phase 2: Single-Session PTY Wrapper
 **Goal**: A single Claude Code session runs inside a real PTY, transparently passes I/O to the user's terminal, auto-detects the rate-limit hit, waits until reset, and sends "continue" — surviving unexpected Claude Code exits without crashing
@@ -68,7 +71,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Detection Engine | 0/? | Not started | - |
+| 1. Detection Engine | 0/3 | Planned | - |
 | 2. Single-Session PTY Wrapper | 0/? | Not started | - |
 | 3. Multi-Session and Status Display | 0/? | Not started | - |
 | 4. CLI Packaging and Distribution | 0/? | Not started | - |
