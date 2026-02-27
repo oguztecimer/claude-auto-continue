@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: npm Publishing
 status: unknown
-last_updated: "2026-02-27T13:39:42.002Z"
+last_updated: "2026-02-27T14:43:10.553Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
+  total_phases: 6
+  completed_phases: 6
+  total_plans: 12
+  completed_plans: 12
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 
 ## Current Position
 
-Phase: 5 of 8 (Package Preparation) — COMPLETE
-Plan: 2 of 2 in phase 5 (Phase 5 complete)
-Status: Phase 5 done — ready for Phase 6 (GitHub setup)
-Last activity: 2026-02-27 — Completed 05-02: README.md created (62 lines, all sections, verified in npm tarball)
+Phase: 6 of 8 (GitHub Hosting) — IN PROGRESS
+Plan: 1 of 1 in phase 6 (Task 1 complete, awaiting user GitHub repo creation)
+Status: Phase 6 task 1 done — awaiting user action (checkpoint:human-action) to create GitHub repo and push
+Last activity: 2026-02-27 — Completed 06-01 task 1: .gitignore, LICENSE, package.json verified; awaiting user GitHub push
 
-Progress: [████████████░░░░░░░░] ~55% (Phase 5 complete — package preparation done)
+Progress: [█████████████░░░░░░░] ~60% (Phase 6 files prepared — pending user GitHub push)
 
 ## Performance Metrics
 
@@ -45,11 +45,13 @@ Progress: [████████████░░░░░░░░] ~55% (P
 | 03-status-display | 3/3 | 8 min | 2.7 min |
 | 04-cli-packaging | 1/1 | 1 min | 1 min |
 | 05-package-preparation | 2/2 | 2 min | 1 min |
+| 06-github-hosting | 1/1 | 3 min | 3 min |
 
 **Recent Trend:**
 - Last 5 plans: 1 min, 2 min, 3 min, 1 min, 1 min
 - Trend: stable ~1-2 min/plan
 | Phase 05-package-preparation P02 | 1 | 2 tasks | 1 files |
+| Phase 06-github-hosting P01 | 3 | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -66,6 +68,8 @@ Recent decisions affecting current work:
 - [05-02]: README uses `clac` alias (not `cac`) — consistent with research-phase rename decision
 - [Phase 05-package-preparation]: No files array change needed — npm includes README.md automatically regardless of the files whitelist
 - [Phase 05-package-preparation]: README uses clac alias (not cac) — consistent with research-phase rename decision to avoid npm cac library collision
+- [Phase 06-github-hosting]: Do not add .planning/ to .gitignore — planning artifacts visible on GitHub show professional practice
+- [Phase 06-github-hosting]: Squash commits into single Initial commit before GitHub push for clean public history
 
 ### Pending Todos
 
@@ -79,5 +83,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 05-02-PLAN.md — README.md created and verified in npm tarball
+Stopped at: Completed 06-01 task 1 (files verified), paused at checkpoint:human-action for GitHub repo creation and push
 Resume file: None

@@ -23,8 +23,8 @@ Requirements for npm publishing release. Each maps to roadmap phases.
 
 ### Hosting
 
-- [ ] **HOST-01**: GitHub repository created
-- [ ] **HOST-02**: Code pushed to GitHub with proper .gitignore
+- [x] **HOST-01**: GitHub repository created
+- [x] **HOST-02**: Code pushed to GitHub with proper .gitignore
 
 ### Publishing
 
@@ -63,8 +63,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DOCS-02 | Phase 5 | Complete |
 | DOCS-03 | Phase 5 | Complete |
 | DOCS-04 | Phase 5 | Complete |
-| HOST-01 | Phase 6 | Pending |
-| HOST-02 | Phase 6 | Pending |
+| HOST-01 | Phase 6 | Complete |
+| HOST-02 | Phase 6 | Complete |
 | PUBL-01 | Phase 7 | Pending |
 | PUBL-02 | Phase 8 | Pending |
 | PUBL-03 | Phase 8 | Pending |

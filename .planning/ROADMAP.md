@@ -22,7 +22,7 @@
 **Milestone Goal:** Publish `claude-auto-continue@1.0.0` to the npm registry with a professional README so any Node.js >=18 developer can install and use the tool.
 
 - [x] **Phase 5: Package Preparation** — Edit package.json metadata and write README.md so the package is registry-ready (completed 2026-02-27)
-- [ ] **Phase 6: GitHub Hosting** *(user action required)* — Create the GitHub repository and push the codebase
+- [x] **Phase 6: GitHub Hosting** *(user action required)* — Create the GitHub repository and push the codebase (completed 2026-02-27)
 - [ ] **Phase 7: Pre-publish Verification** — Run the pre-publish checklist to confirm tarball, tests, and auth are good before committing to publish
 - [ ] **Phase 8: Publish** *(user action required)* — Execute `npm publish` and confirm the package is live and installable
 
@@ -94,6 +94,6 @@ Plans:
 | 3. Single-Session Status Display | v1.0 MVP | 3/3 | Complete | 2026-02-27 |
 | 4. CLI Packaging and Distribution | v1.0 MVP | 1/1 | Complete | 2026-02-27 |
 | 5. Package Preparation | 2/2 | Complete   | 2026-02-27 | - |
-| 6. GitHub Hosting | v1.0 npm Publishing | 0/1 | Not started | - |
+| 6. GitHub Hosting | 1/1 | Complete   | 2026-02-27 | - |
 | 7. Pre-publish Verification | v1.0 npm Publishing | 0/1 | Not started | - |
 | 8. Publish | v1.0 npm Publishing | 0/1 | Not started | - |
