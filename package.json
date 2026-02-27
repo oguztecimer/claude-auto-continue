@@ -3,12 +3,30 @@
   "version": "0.1.0",
   "description": "Automatically resumes Claude Code sessions after usage limits reset",
   "main": "dist/index.js",
+  "bin": {
+    "claude-auto-continue": "bin/claude-auto-continue.js",
+    "cac": "bin/claude-auto-continue.js"
+  },
+  "files": [
+    "dist/",
+    "bin/"
+  ],
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": [],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "auto-continue",
+    "rate-limit",
+    "cli"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
