@@ -75,6 +75,21 @@ describe('PatternDetector', () => {
     });
   });
 
+  describe('Format D (out of extra usage)', () => {
+    it('emits limit event for "You\'re out of extra usage · resets 4am (Europe/Istanbul)"', () => {
+      const detector = new PatternDetector();
+      const handler = vi.fn();
+      detector.on('limit', handler);
+
+      detector.feed("You're out of extra usage \u00B7 resets 4am (Europe/Istanbul)");
+
+      expect(handler).toHaveBeenCalledOnce();
+      const event: LimitEvent = handler.mock.calls[0][0];
+      expect(event.resetTime).toBeInstanceOf(Date);
+      expect(event.rawMatch).toBeDefined();
+    });
+  });
+
   describe('Timestamp parsing', () => {
     it('event payload contains resetTime as a Date for unix timestamp format', () => {
       const detector = new PatternDetector();

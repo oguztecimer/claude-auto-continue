@@ -13,13 +13,14 @@ export interface LimitEvent {
 }
 
 /**
- * Default regex that matches all three known Claude rate-limit message formats:
+ * Default regex that matches all known Claude rate-limit message formats:
  *   Format A (legacy): "Claude AI usage limit reached|1760000400"
  *   Format B (mid-era): "Claude usage limit reached. Your limit will reset at 3pm (America/Santiago)."
- *   Format C (current): "You've hit your limit · resets 4pm (Europe/Berlin)"
+ *   Format C: "You've hit your limit · resets 4pm (Europe/Berlin)"
+ *   Format D (current): "You're out of extra usage · resets 4am (Europe/Istanbul)"
  */
 const DEFAULT_PATTERN =
-  /(?:Claude(?:\s+AI)?\s+usage\s+limit\s+reached[|.]|you(?:'ve| have)\s+hit\s+your\s+limit)/i;
+  /(?:Claude(?:\s+AI)?\s+usage\s+limit\s+reached[|.]|you(?:'ve| have)\s+hit\s+your\s+limit|you(?:'re| are)\s+out\s+of\s+extra\s+usage)/i;
 
 /** Matches a 10+ digit unix timestamp after a pipe: |1760000400 */
 const UNIX_TS_PATTERN = /\|(\d{10,})/;
