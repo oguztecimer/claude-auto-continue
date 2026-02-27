@@ -200,7 +200,6 @@ function main(): void {
           countdownInterval = null;
           return;
         }
-        process.stdout.write('\x1b[H');
         process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
         process.stdout.write(countdownCard.render({ resetTime, cwd }));
       }, 1000);
