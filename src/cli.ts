@@ -2,8 +2,9 @@ import { ProcessSupervisor } from './ProcessSupervisor.js';
 import { StatusBar } from './StatusBar.js';
 import { CountdownCard } from './CountdownCard.js';
 import type { StateChangeEvent } from './ProcessSupervisor.js';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { execSync } from 'child_process';
 
 /**
  * Read the version string from package.json.
@@ -56,6 +57,47 @@ function parseArgs(argv: string[]): { claudeArgs: string[] } {
     return { claudeArgs: [] };
   }
   return { claudeArgs: userArgs.slice(separatorIdx + 1) };
+}
+
+/**
+ * Resolve the full path to the `claude` binary.
+ *
+ * node-pty uses posix_spawnp which cannot resolve shell aliases or
+ * binaries outside of PATH. This function tries multiple strategies:
+ * 1. `which claude` via a shell (resolves PATH + common shell profile additions)
+ * 2. Common install locations (~/.local/bin, ~/.claude/local)
+ * 3. Falls back to 'claude' and lets node-pty try PATH directly
+ */
+function resolveClaudePath(): string {
+  // Try `which` in a shell — this picks up PATH entries from shell profiles
+  try {
+    const result = execSync('which claude', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 5000,
+    }).trim();
+    if (result && existsSync(result)) {
+      return result;
+    }
+  } catch {
+    // which failed — try known locations
+  }
+
+  // Check common install locations
+  const home = process.env['HOME'] ?? '';
+  const knownPaths = [
+    join(home, '.local', 'bin', 'claude'),
+    join(home, '.claude', 'local', 'claude'),
+    '/usr/local/bin/claude',
+  ];
+  for (const p of knownPaths) {
+    if (existsSync(p)) {
+      return p;
+    }
+  }
+
+  // Fall back to bare command — let node-pty attempt PATH resolution
+  return 'claude';
 }
 
 /**
@@ -181,8 +223,9 @@ function main(): void {
     process.exit(143);
   });
 
-  // Spawn Claude Code with passed-through arguments
-  supervisor.spawn('claude', claudeArgs);
+  // Resolve claude binary path and spawn
+  const claudePath = resolveClaudePath();
+  supervisor.spawn(claudePath, claudeArgs);
 }
 
 main();
