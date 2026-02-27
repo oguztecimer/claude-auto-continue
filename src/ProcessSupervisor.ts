@@ -30,7 +30,7 @@ export interface StateChangeEvent {
 export interface ProcessSupervisorOptions {
   /** Override node-pty spawn function for testing (dependency injection) */
   spawnFn?: typeof pty.spawn;
-  /** Cooldown after resume — suppresses false-positive re-detections. Default: 30000ms */
+  /** Cooldown after resume — suppresses false-positive re-detections. Default: 5000ms */
   cooldownMs?: number;
   /** Safety buffer added to reset time before resuming. Default: 5000ms */
   safetyMs?: number;
@@ -68,7 +68,7 @@ export class ProcessSupervisor extends EventEmitter {
   constructor(options: ProcessSupervisorOptions = {}) {
     super();
     this.#spawnFn = options.spawnFn ?? pty.spawn;
-    this.#cooldownMs = options.cooldownMs ?? 30_000;
+    this.#cooldownMs = options.cooldownMs ?? 5_000;
     this.#detector = new PatternDetector();
     this.#scheduler = new Scheduler(options.safetyMs ?? 5_000);
     this.#onExitCallback = options.onExit ?? ((code: number) => process.exit(code));
