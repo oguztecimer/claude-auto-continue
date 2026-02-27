@@ -132,9 +132,6 @@ function main(): void {
 
   // Create display components
   const statusBar = new StatusBar({ cols: cols() });
-  // Set terminal title to show running status (non-intrusive)
-  setTerminalTitle(`${folderName} - Running`);
-
   // Countdown timer handle
   let countdownInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -250,6 +247,9 @@ function main(): void {
   // Resolve claude binary path and spawn
   const claudePath = resolveClaudePath();
   supervisor.spawn(claudePath, claudeArgs);
+
+  // Set terminal title after spawn so Claude Code's init doesn't overwrite it
+  setTimeout(() => setTerminalTitle(`${folderName} - Running`), 2000);
 }
 
 main();
