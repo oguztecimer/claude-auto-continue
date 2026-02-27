@@ -74,6 +74,9 @@ Unattended Claude Code sessions that automatically resume after usage limits res
 | Raw ANSI escapes over TUI library | Zero new dependencies, project stays minimal | ✓ Good — Phase 3 |
 | Single session per terminal window | User preference, simpler architecture | ✓ Good — Phase 3 |
 | Thin bin wrapper with shebang | Standard npm pattern, works with npm link and npm install -g | ✓ Good — Phase 4 |
+| MIT license | Standard open source license, SPDX-compatible | ✓ Good — Phase 6 |
+| Keep .planning/ in git | Shows professional planning practice on GitHub | ✓ Good — Phase 6 |
+| GitHub username oguztecimer | User chose different username than initially planned | ✓ Adjusted — Phase 6 |
 
 ---
-*Last updated: 2026-02-27 after v1.0 npm Publishing milestone started*
+*Last updated: 2026-02-27 after Phase 6 (GitHub Hosting)*
