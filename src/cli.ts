@@ -2,6 +2,49 @@ import { ProcessSupervisor } from './ProcessSupervisor.js';
 import { StatusBar } from './StatusBar.js';
 import { CountdownCard } from './CountdownCard.js';
 import type { StateChangeEvent } from './ProcessSupervisor.js';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+/**
+ * Read the version string from package.json.
+ */
+function getVersion(): string {
+  try {
+    const pkgPath = join(__dirname, '..', 'package.json');
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+    return pkg.version ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+/**
+ * Print usage instructions to stdout.
+ */
+function showHelp(): void {
+  const version = getVersion();
+  console.log(`claude-auto-continue v${version}
+
+Automatically resumes Claude Code sessions after usage limits reset.
+
+USAGE:
+  claude-auto-continue [options] [-- claude-code-args...]
+  cac [options] [-- claude-code-args...]
+
+OPTIONS:
+  --help, -h       Show this help message
+  --version, -v    Show version number
+
+EXAMPLES:
+  claude-auto-continue                  Start with defaults
+  claude-auto-continue -- --continue    Pass --continue to Claude Code
+  cac -- --resume                       Short alias, pass --resume to Claude Code
+
+WHAT IT DOES:
+  Wraps Claude Code in a PTY, monitors for rate-limit messages, waits
+  until the reset time, then sends "continue" to resume automatically.
+  A status bar and countdown timer show progress while waiting.`);
+}
 
 /**
  * Parse CLI arguments, extracting Claude Code args after the -- separator.
@@ -19,6 +62,18 @@ function parseArgs(argv: string[]): { claudeArgs: string[] } {
  * Main entry point — wires ProcessSupervisor to the status display.
  */
 function main(): void {
+  const args = process.argv.slice(2);
+
+  // Handle --help and --version before anything else
+  if (args.includes('--help') || args.includes('-h')) {
+    showHelp();
+    process.exit(0);
+  }
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log(getVersion());
+    process.exit(0);
+  }
+
   const { claudeArgs } = parseArgs(process.argv);
   const cols = () => process.stdout.columns ?? 80;
   const rows = () => process.stdout.rows ?? 24;
