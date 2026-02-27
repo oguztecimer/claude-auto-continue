@@ -64,28 +64,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DETC-01 | — | Pending |
-| DETC-02 | — | Pending |
-| DETC-03 | — | Pending |
-| DETC-04 | — | Pending |
-| DETC-05 | — | Pending |
-| RESM-01 | — | Pending |
-| RESM-02 | — | Pending |
-| RESM-03 | — | Pending |
-| RESM-04 | — | Pending |
-| MULT-01 | — | Pending |
-| MULT-02 | — | Pending |
-| MULT-03 | — | Pending |
-| MULT-04 | — | Pending |
-| INFR-01 | — | Pending |
-| INFR-02 | — | Pending |
-| INFR-03 | — | Pending |
+| DETC-01 | Phase 1 | Pending |
+| DETC-02 | Phase 1 | Pending |
+| DETC-03 | Phase 1 | Pending |
+| DETC-04 | Phase 1 | Pending |
+| DETC-05 | Phase 1 | Pending |
+| RESM-01 | Phase 2 | Pending |
+| RESM-02 | Phase 2 | Pending |
+| RESM-03 | Phase 3 | Pending |
+| RESM-04 | Phase 2 | Pending |
+| MULT-01 | Phase 3 | Pending |
+| MULT-02 | Phase 3 | Pending |
+| MULT-03 | Phase 3 | Pending |
+| MULT-04 | Phase 3 | Pending |
+| INFR-01 | Phase 2 | Pending |
+| INFR-02 | Phase 2 | Pending |
+| INFR-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after initial definition*
+*Last updated: 2026-02-27 after roadmap creation — all 16 requirements mapped*
