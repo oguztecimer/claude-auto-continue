@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-27)
 ## Current Position
 
 Phase: 1 of 4 (Detection Engine)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-02-27 — Completed 01-02 (PatternDetector TDD — 15 tests, all passing)
+Plan: 3 of 3 in current phase (PHASE COMPLETE)
+Status: Phase 1 complete
+Last activity: 2026-02-27 — Completed 01-03 (Scheduler TDD — 8 tests, all passing)
 
-Progress: [██░░░░░░░░] 17% (2/12 estimated total plans)
+Progress: [███░░░░░░░] 25% (3/12 estimated total plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 3 min
-- Total execution time: 6 min
+- Total execution time: 10 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-detection-engine | 2/3 | 6 min | 3 min |
+| 01-detection-engine | 3/3 | 10 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 2 min, 4 min
-- Trend: slight increase
+- Last 5 plans: 2 min, 4 min, 4 min
+- Trend: stable ~3-4 min/plan
 
 *Updated after each plan completion*
 
@@ -51,6 +51,10 @@ Recent decisions affecting current work:
 - [01-02]: Human-time parsing ignores IANA timezone — parse hour/minute/meridiem only, trust local clock; avoids tz-data dependency
 - [01-02]: reset() clears buffer AND #detected flag — intentional re-arm semantics for retry cycles
 - [01-02]: rawMatch is last 500 chars of buffer — provides context without exposing full history
+- [01-03]: Single setTimeout (not setInterval) — setInterval drift compounds over multi-hour rate limit waits
+- [01-03]: Safety buffer defaults to 5000ms (5 seconds) — configurable, accounts for API clock skew
+- [01-03]: #cancelled flag is sticky — once cancelled, scheduleAt() calls are silently ignored
+- [01-03]: Null resetTime fires at 0ms — safe fallback when rate limit timestamp cannot be parsed
 
 ### Pending Todos
 
@@ -65,5 +69,5 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-27
-Stopped at: Completed 01-02-PLAN.md (PatternDetector TDD, 2 tasks, 22 tests passing)
+Stopped at: Completed 01-03-PLAN.md (Scheduler TDD, 2 tasks, 30 tests passing — Phase 1 complete)
 Resume file: None

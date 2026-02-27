@@ -65,7 +65,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DETC-01 | Phase 1 | Done (01-02) |
-| DETC-02 | Phase 1 | Done (01-02) |
+| DETC-02 | Phase 1 | Done (01-02, 01-03) |
 | DETC-03 | Phase 1 | Done (01-02) |
 | DETC-04 | Phase 1 | Done (01-02) |
 | DETC-05 | Phase 1 | Done (01-01) |
@@ -88,4 +88,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after 01-02 completion — DETC-01 through DETC-04 marked complete*
+*Last updated: 2026-02-27 after 01-03 completion — Phase 1 (Detection Engine) complete; DETC-02 covered by Scheduler (timestamp to timed callback bridge)*
