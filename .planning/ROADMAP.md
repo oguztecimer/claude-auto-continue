@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Detection Engine** - Configurable rate-limit pattern detection with rolling buffer, ANSI stripping, and timestamp parsing — fully unit-tested with no PTY dependency (3/3 plans complete, DONE 2026-02-27)
 - [x] **Phase 2: Single-Session PTY Wrapper** - One Claude Code session spawned in a real PTY, detected, waited on, and resumed automatically with EPIPE-safe stdin writing (completed 2026-02-27)
-- [ ] **Phase 3: Multi-Session and Status Display** - 2-5 concurrent sessions monitored simultaneously, each with independent state and a live per-session status display
+- [ ] **Phase 3: Single-Session Status Display** - Live status bar with countdown timer, color-coded state feedback, and auto-exit on session end
 - [ ] **Phase 4: CLI Packaging and Distribution** - Installable npm package with a runnable CLI command and clean user-facing help
 
 ## Phase Details
@@ -46,15 +46,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 02-01-PLAN.md — StdinWriter TDD + node-pty install (Wave 1) — DONE 2026-02-27
 - [x] 02-02-PLAN.md — ProcessSupervisor TDD — four-state PTY orchestrator (Wave 2) — DONE 2026-02-27
 
-### Phase 3: Multi-Session and Status Display
-**Goal**: Users can run 2-5 Claude Code sessions simultaneously, each monitored independently, with a live status display showing per-session state and countdown — dead sessions removed without affecting running ones
+### Phase 3: Single-Session Status Display
+**Goal**: The tool shows a persistent top-of-terminal status bar with color-coded session state and a live countdown timer while waiting for rate-limit reset — providing clear visual feedback that the tool is working
 **Depends on**: Phase 2
-**Requirements**: MULT-01, MULT-02, MULT-03, MULT-04, RESM-03
+**Requirements**: RESM-03
 **Success Criteria** (what must be TRUE):
-  1. Starting the tool with N sessions (2-5) spawns N independent Claude Code PTY processes, each monitored in isolation with its own state machine
-  2. The status display shows each session's current state (running / waiting / resuming / dead) and, for waiting sessions, a live countdown to the reset time
-  3. When one session hits the rate limit, the others continue running unaffected — limit detection in one session does not block or disturb any other
-  4. When a Claude Code process exits unexpectedly, its session is removed from the display and monitoring continues for the remaining sessions without a crash
+  1. The status bar at the top of the terminal shows the current session state (running/waiting/resuming) with color coding (green/yellow/red)
+  2. When waiting for rate-limit reset, a live countdown timer ticks every second showing time remaining and absolute reset time
+  3. When all output is waiting, a centered countdown card displays with session name, countdown, and reset time
+  4. Claude Code arguments can be passed through via `--` separator (e.g., `claude-auto-continue -- --continue`)
 **Plans**: TBD
 
 ### Phase 4: CLI Packaging and Distribution
@@ -75,5 +75,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Detection Engine | 3/3 | Complete | 2026-02-27 |
 | 2. Single-Session PTY Wrapper | 2/2 | Complete   | 2026-02-27 |
-| 3. Multi-Session and Status Display | 0/? | Not started | - |
+| 3. Single-Session Status Display | 0/? | Not started | - |
 | 4. CLI Packaging and Distribution | 0/? | Not started | - |

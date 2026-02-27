@@ -19,11 +19,11 @@ Unattended Claude Code sessions that automatically resume after usage limits res
 
 ### Active
 
-- [ ] Support multiple concurrent Claude Code instances (2-5)
-- [ ] Provide visible feedback (countdown, status) while waiting
+- [ ] Provide visible feedback (countdown, status bar) while waiting for rate-limit reset
 
 ### Out of Scope
 
+- Multi-session orchestration — user prefers one session per terminal window
 - Mobile notifications — desktop tool only
 - GUI/web interface — CLI/terminal tool
 - API key management — uses existing Claude Code auth

@@ -24,10 +24,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Multi-Session
 
-- [ ] **MULT-01**: Tool supports monitoring 2-5 concurrent Claude Code sessions simultaneously
-- [ ] **MULT-02**: Tool displays per-session status (waiting/running/resumed/dead)
-- [ ] **MULT-03**: Tool gracefully removes dead sessions from monitoring without crashing
-- [ ] **MULT-04**: Each session has an independent write channel for sending "continue"
+~~Moved to Out of Scope — user prefers one session per terminal window.~~
 
 ### Infrastructure
 
@@ -51,6 +48,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Feature | Reason |
 |---------|--------|
+| Multi-session orchestration (MULT-01 through MULT-04) | User prefers one session per terminal window — separate instances |
 | `--dangerously-skip-permissions` passthrough | Security risk in unattended tool |
 | GUI / web dashboard | Scope creep; terminal-native tool |
 | Cross-tool migration (Claude → Gemini) | Fundamentally different product |
@@ -73,10 +71,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESM-02 | Phase 2 | Complete |
 | RESM-03 | Phase 3 | Pending |
 | RESM-04 | Phase 2 | Complete |
-| MULT-01 | Phase 3 | Pending |
-| MULT-02 | Phase 3 | Pending |
-| MULT-03 | Phase 3 | Pending |
-| MULT-04 | Phase 3 | Pending |
+| MULT-01 | — | Out of Scope |
+| MULT-02 | — | Out of Scope |
+| MULT-03 | — | Out of Scope |
+| MULT-04 | — | Out of Scope |
 | INFR-01 | Phase 2 | Complete |
 | INFR-02 | Phase 2 | Complete |
 | INFR-03 | Phase 4 | Pending |
