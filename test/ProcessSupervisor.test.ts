@@ -183,30 +183,10 @@ describe('ProcessSupervisor', () => {
     expect(writeCalls).toContain('\r');
   });
 
-  it('suppresses re-detection during cooldown period', () => {
+  it('handles multiple rate-limit cycles', () => {
     const mockPty = makeMockPty();
     const spawnFn = vi.fn().mockReturnValue(mockPty);
-    const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0, cooldownMs: 5000 });
-    supervisor.spawn('claude', ['--continue']);
-
-    const { dataCallback } = getMockCallbacks(mockPty);
-    dataCallback!('Claude usage limit reached.');
-    vi.runAllTimers();
-
-    // Now in RUNNING state with cooldown active
-    expect(supervisor.state).toBe(SessionState.RUNNING);
-
-    // Immediately feed rate-limit text again during cooldown
-    dataCallback!(RATE_LIMIT_TEXT);
-
-    // Should stay RUNNING — cooldown suppresses re-detection
-    expect(supervisor.state).toBe(SessionState.RUNNING);
-  });
-
-  it('handles multiple rate-limit cycles (second detection works after cooldown expires)', () => {
-    const mockPty = makeMockPty();
-    const spawnFn = vi.fn().mockReturnValue(mockPty);
-    const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0, cooldownMs: 5000 });
+    const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0 });
     supervisor.spawn('claude', ['--continue']);
 
     const { dataCallback } = getMockCallbacks(mockPty);
@@ -218,18 +198,12 @@ describe('ProcessSupervisor', () => {
     vi.runAllTimers();
     expect(supervisor.state).toBe(SessionState.RUNNING);
 
-    // Advance past cooldown
-    vi.advanceTimersByTime(10000);
-
     // --- Second cycle ---
     dataCallback!('Claude usage limit reached.');
     expect(supervisor.state).toBe(SessionState.WAITING);
 
     vi.runAllTimers();
     expect(supervisor.state).toBe(SessionState.RUNNING);
-
-    // Advance past cooldown
-    vi.advanceTimersByTime(10000);
 
     // --- Third cycle ---
     dataCallback!('Claude usage limit reached.');

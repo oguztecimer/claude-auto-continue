@@ -30,8 +30,6 @@ export interface StateChangeEvent {
 export interface ProcessSupervisorOptions {
   /** Override node-pty spawn function for testing (dependency injection) */
   spawnFn?: typeof pty.spawn;
-  /** Cooldown after resume — suppresses false-positive re-detections. Default: 5000ms */
-  cooldownMs?: number;
   /** Safety buffer added to reset time before resuming. Default: 5000ms */
   safetyMs?: number;
   /** Override cooldown duration in seconds. When set, ignores parsed reset time. */
@@ -53,7 +51,6 @@ export interface ProcessSupervisorOptions {
  */
 export class ProcessSupervisor extends EventEmitter {
   readonly #spawnFn: typeof pty.spawn;
-  readonly #cooldownMs: number;
   readonly #detector: PatternDetector;
   readonly #scheduler: Scheduler;
   readonly #onExitCallback: (code: number) => void;
@@ -62,13 +59,11 @@ export class ProcessSupervisor extends EventEmitter {
 
   #state: SessionState = SessionState.RUNNING;
   #writer: StdinWriter | null = null;
-  #cooldownUntil = 0;
   #resetTime: Date | null = null;
 
   constructor(options: ProcessSupervisorOptions = {}) {
     super();
     this.#spawnFn = options.spawnFn ?? pty.spawn;
-    this.#cooldownMs = options.cooldownMs ?? 5_000;
     this.#detector = new PatternDetector();
     this.#scheduler = new Scheduler(options.safetyMs ?? 5_000);
     this.#onExitCallback = options.onExit ?? ((code: number) => process.exit(code));
@@ -175,13 +170,6 @@ export class ProcessSupervisor extends EventEmitter {
    * Transitions: RUNNING -> LIMIT_DETECTED -> WAITING
    */
   #onLimitDetected(event: LimitEvent): void {
-    // Suppress false positives during post-resume cooldown.
-    // Reset the detector so it can fire again after cooldown expires.
-    if (Date.now() < this.#cooldownUntil) {
-      this.#detector.reset();
-      return;
-    }
-
     this.#resetTime = event.resetTime;
     this.#setState(SessionState.LIMIT_DETECTED);
 
@@ -217,10 +205,6 @@ export class ProcessSupervisor extends EventEmitter {
     this.#writer!.write('continue');
     setTimeout(() => {
       this.#writer!.write('\r');
-
-      // Arm cooldown to suppress the false-positive re-detection that can occur
-      // immediately after resume (Claude Code issue #14129)
-      this.#cooldownUntil = Date.now() + this.#cooldownMs;
 
       // Re-arm the detector for the next potential rate-limit cycle
       this.#detector.reset();
