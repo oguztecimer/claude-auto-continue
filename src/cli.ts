@@ -1,5 +1,5 @@
 import { ProcessSupervisor } from './ProcessSupervisor.js';
-import { StatusBar } from './StatusBar.js';
+import { CountdownCard } from './CountdownCard.js';
 import type { StateChangeEvent } from './ProcessSupervisor.js';
 import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
@@ -139,13 +139,9 @@ function main(): void {
   const folderName = cwd.split('/').pop() ?? cwd;
 
   // Create display components
-  const statusBar = new StatusBar({ cols: cols() });
-  // Countdown timer handle
+  const card = new CountdownCard({ cols: cols(), rows: rows() });
   let countdownInterval: ReturnType<typeof setInterval> | null = null;
-
-  // Track whether we own the terminal (WAITING/DEAD) or Claude Code does (RUNNING)
   let ownsTerminal = false;
-  // Track reset time for resize handler
   let currentResetTime: Date | null = null;
 
   // Create supervisor with output routed through the standard handler
@@ -166,34 +162,17 @@ function main(): void {
       countdownInterval = null;
     }
 
-    if (state === 'DEAD') {
-      if (!ownsTerminal) {
-        ownsTerminal = true;
-        process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
-      }
-      process.stdout.write(statusBar.initScrollRegion(rows()));
-      process.stdout.write(statusBar.render('DEAD', { cwd }));
-
-      // Wait 5 seconds to show "Dead" status, then cleanup
-      setTimeout(() => {
-        process.stdout.write(statusBar.cleanup());
-      }, 5000);
-      return;
-    }
-
     if (state === 'WAITING' && resetTime) {
       setTerminalTitle(`${folderName} - Waiting`);
       currentResetTime = resetTime;
 
-      // Switch to alternate screen buffer to preserve Claude's output
       if (!ownsTerminal) {
         ownsTerminal = true;
-        process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
+        process.stdout.write('\x1b[?1049h');
       }
-      process.stdout.write(statusBar.initScrollRegion(rows()));
-      process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
+      process.stdout.write('\x1b[2J\x1b[H');
+      process.stdout.write(card.render({ resetTime, cwd }));
 
-      // Start 1-second countdown tick
       countdownInterval = setInterval(() => {
         if (supervisor.state !== 'WAITING') {
           clearInterval(countdownInterval!);
@@ -201,16 +180,15 @@ function main(): void {
           return;
         }
         setTerminalTitle(`${folderName} - Waiting`);
-        process.stdout.write(statusBar.render('WAITING', { resetTime, cwd }));
+        process.stdout.write('\x1b[2J\x1b[H');
+        process.stdout.write(card.render({ resetTime, cwd }));
       }, 1000);
-    } else if (state === 'RUNNING' || state === 'RESUMING') {
+    } else if (state === 'RUNNING' || state === 'RESUMING' || state === 'DEAD') {
       setTerminalTitle('');
       currentResetTime = null;
 
       if (ownsTerminal) {
-        // Switch back to main screen — restores Claude's output exactly
         ownsTerminal = false;
-        process.stdout.write(statusBar.cleanup());
         process.stdout.write('\x1b[?1049l');
       }
     }
@@ -218,13 +196,12 @@ function main(): void {
 
   // Handle terminal resize
   process.stdout.on('resize', () => {
-    statusBar.cols = cols();
+    card.cols = cols();
+    card.rows = rows();
 
-    if (ownsTerminal) {
+    if (ownsTerminal && currentResetTime) {
       process.stdout.write('\x1b[2J\x1b[H');
-      process.stdout.write(statusBar.initScrollRegion(rows()));
-      const currentState = supervisor.state as string;
-      process.stdout.write(statusBar.render(currentState, { resetTime: currentResetTime ?? undefined, cwd }));
+      process.stdout.write(card.render({ resetTime: currentResetTime, cwd }));
     }
   });
 
@@ -235,7 +212,6 @@ function main(): void {
       countdownInterval = null;
     }
     if (ownsTerminal) {
-      process.stdout.write(statusBar.cleanup());
       process.stdout.write('\x1b[?1049l');
     }
     setTerminalTitle('');
