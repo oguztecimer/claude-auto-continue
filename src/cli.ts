@@ -104,7 +104,8 @@ function resolveClaudePath(): string {
  * Works in most terminal emulators without interfering with app content.
  */
 function setTerminalTitle(title: string): void {
-  process.stdout.write(`\x1b]0;${title}\x07`);
+  // OSC 0: set window title, OSC 1: set icon/tab name
+  process.stdout.write(`\x1b]0;${title}\x07\x1b]1;${title}\x07`);
 }
 
 /**
