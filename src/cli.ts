@@ -170,7 +170,7 @@ function main(): void {
         ownsTerminal = true;
         process.stdout.write('\x1b[?1049h');
       }
-      process.stdout.write('\x1b[2J\x1b[H');
+      process.stdout.write('\x1b[2J\x1b[3J\x1b[H');
       process.stdout.write(card.render({ resetTime, cwd }));
 
       countdownInterval = setInterval(() => {
@@ -180,7 +180,7 @@ function main(): void {
           return;
         }
         setTerminalTitle(`${folderName} - Waiting`);
-        process.stdout.write('\x1b[2J\x1b[H');
+        process.stdout.write('\x1b[2J\x1b[3J\x1b[H');
         process.stdout.write(card.render({ resetTime, cwd }));
       }, 1000);
     } else if (state === 'RUNNING' || state === 'RESUMING' || state === 'DEAD') {
@@ -200,7 +200,7 @@ function main(): void {
     card.rows = rows();
 
     if (ownsTerminal && currentResetTime) {
-      process.stdout.write('\x1b[2J\x1b[H');
+      process.stdout.write('\x1b[2J\x1b[3J\x1b[H');
       process.stdout.write(card.render({ resetTime: currentResetTime, cwd }));
     }
   });
