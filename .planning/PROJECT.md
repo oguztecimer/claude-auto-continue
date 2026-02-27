@@ -12,14 +12,13 @@ Unattended Claude Code sessions that automatically resume after usage limits res
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Detect when Claude Code hits usage limit — Phase 1 (PatternDetector with ANSI stripping and rolling buffer)
+- ✓ Parse the reset timestamp from Claude Code output — Phase 1 (PatternDetector extracts Date from human-readable timestamp)
+- ✓ Wait until the usage limit resets — Phase 2 (Scheduler delays until parsed reset time + safety buffer)
+- ✓ Automatically send "continue" to resume the paused session — Phase 2 (ProcessSupervisor sends ESC + "continue\r" via StdinWriter)
 
 ### Active
 
-- [ ] Detect when Claude Code hits usage limit ("Claude usage limit reached" message with reset timestamp)
-- [ ] Parse the reset timestamp from Claude Code output
-- [ ] Wait until the usage limit resets
-- [ ] Automatically send "continue" to resume the paused session
 - [ ] Support multiple concurrent Claude Code instances (2-5)
 - [ ] Provide visible feedback (countdown, status) while waiting
 
@@ -48,8 +47,12 @@ Unattended Claude Code sessions that automatically resume after usage limits res
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Node.js over shell script | Fits user's workflow, easier to extend | — Pending |
-| Build custom vs use existing | User wants tailored solution | — Pending |
+| Node.js over shell script | Fits user's workflow, easier to extend | Confirmed — CJS project with TypeScript |
+| Build custom vs use existing | User wants tailored solution | Confirmed — custom tool |
+| node-pty for PTY spawning | Real TTY required for Claude Code; hangs without it | Confirmed — Phase 2 |
+| Four-state machine (RUNNING/LIMIT_DETECTED/WAITING/RESUMING) | Clean separation of detection, waiting, and resume concerns | Confirmed — Phase 2 |
+| Dependency injection over module mocking | spawnFn/onExit constructor options avoid vi.mock() ESM/CJS pitfalls | Confirmed — Phase 2 |
+| CommonJS over ESM | node-pty native module interop friction with ESM | Confirmed — Phase 1 |
 
 ---
-*Last updated: 2026-02-27 after initialization*
+*Last updated: 2026-02-27 after Phase 2*

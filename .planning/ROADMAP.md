@@ -43,8 +43,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. If Claude Code exits unexpectedly during the wait window, the tool catches the EPIPE error gracefully and exits cleanly rather than crashing with an unhandled exception
   4. The four-state machine (RUNNING, LIMIT_DETECTED, WAITING, RESUMING) transitions correctly and the current state is visible in output
 **Plans**: 2 plans
-- [ ] 02-01-PLAN.md — StdinWriter TDD + node-pty install (Wave 1)
-- [ ] 02-02-PLAN.md — ProcessSupervisor TDD — four-state PTY orchestrator (Wave 2)
+- [x] 02-01-PLAN.md — StdinWriter TDD + node-pty install (Wave 1) — DONE 2026-02-27
+- [x] 02-02-PLAN.md — ProcessSupervisor TDD — four-state PTY orchestrator (Wave 2) — DONE 2026-02-27
 
 ### Phase 3: Multi-Session and Status Display
 **Goal**: Users can run 2-5 Claude Code sessions simultaneously, each monitored independently, with a live status display showing per-session state and countdown — dead sessions removed without affecting running ones
