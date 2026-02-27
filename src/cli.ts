@@ -251,8 +251,8 @@ function main(): void {
     process.exit(143);
   });
 
-  // Clear terminal and resolve claude binary path
-  process.stdout.write('\x1b[2J\x1b[H');
+  // Clear terminal (visible area + scrollback buffer)
+  process.stdout.write('\x1b[2J\x1b[3J\x1b[H');
   const claudePath = resolveClaudePath();
   supervisor.spawn(claudePath, claudeArgs);
 
