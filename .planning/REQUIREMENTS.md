@@ -30,7 +30,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **INFR-01**: Tool spawns Claude Code via node-pty (required — Claude Code hangs without real TTY)
 - [x] **INFR-02**: Tool passes through Claude Code I/O transparently to the user's terminal
-- [ ] **INFR-03**: Tool is installable via npm and runnable as a CLI command
+- [x] **INFR-03**: Tool is installable via npm and runnable as a CLI command
 
 ## v2 Requirements
 
@@ -77,7 +77,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MULT-04 | — | Out of Scope |
 | INFR-01 | Phase 2 | Complete |
 | INFR-02 | Phase 2 | Complete |
-| INFR-03 | Phase 4 | Pending |
+| INFR-03 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 16 total
