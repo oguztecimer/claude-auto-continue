@@ -125,7 +125,8 @@ function main(): void {
   const statusBar = new StatusBar({ cols: cols() });
   const countdownCard = new CountdownCard({ cols: cols(), rows: rows() });
 
-  // Set up terminal: scroll region leaves row 1 for status bar
+  // Clear terminal and set up scroll region leaving row 1 for status bar
+  process.stdout.write('\x1b[2J\x1b[H');
   process.stdout.write(statusBar.initScrollRegion(rows()));
 
   // Initial status bar render
