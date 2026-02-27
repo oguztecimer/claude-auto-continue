@@ -110,11 +110,12 @@ export class ProcessSupervisor extends EventEmitter {
 
     this.#writer = new StdinWriter(ptyProcess);
 
-    // --- PTY output: pass to output handler, optionally feed detector ---
+    // --- PTY output: pass to output handler and detector only during RUNNING ---
+    // During WAITING/LIMIT_DETECTED, the countdown card owns the terminal display.
+    // Forwarding PTY output (e.g. menu dismissal responses) would dirty the screen.
     ptyProcess.onData((data: string) => {
-      this.#onOutput(data);
-      // Only feed the detector when RUNNING — ignore output in all other states
       if (this.#state === SessionState.RUNNING) {
+        this.#onOutput(data);
         this.#detector.feed(data);
       }
     });
