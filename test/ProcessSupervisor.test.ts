@@ -177,15 +177,9 @@ describe('ProcessSupervisor', () => {
 
     vi.runAllTimers();
 
-    // Verify Escape + "continue\r" were written to PTY
+    // Verify "continue\r" was written to PTY
     const writeCalls = vi.mocked(mockPty.write).mock.calls.map(c => c[0]);
-    expect(writeCalls).toContain('\x1b');
     expect(writeCalls).toContain('continue\r');
-
-    // Escape must come before "continue\r"
-    const escIdx = writeCalls.indexOf('\x1b');
-    const contIdx = writeCalls.indexOf('continue\r');
-    expect(escIdx).toBeLessThan(contIdx);
   });
 
   it('suppresses re-detection during cooldown period', () => {

@@ -200,8 +200,6 @@ export class ProcessSupervisor extends EventEmitter {
   #onResumeReady(): void {
     this.#setState(SessionState.RESUMING);
 
-    // Send Escape to dismiss any rate-limit UI overlay
-    this.#writer!.write('\x1b');
     // Type "continue" and press Enter to resume the session
     this.#writer!.write('continue\r');
 
