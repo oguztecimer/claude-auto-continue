@@ -166,7 +166,7 @@ describe('ProcessSupervisor', () => {
     expect(supervisor.state).toBe(SessionState.RUNNING);
   });
 
-  it('sends Escape then "continue\\r" during RESUMING transition', () => {
+  it('sends "continue" then "\\r" as separate writes during RESUMING transition', () => {
     const mockPty = makeMockPty();
     const spawnFn = vi.fn().mockReturnValue(mockPty);
     const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0 });
@@ -177,9 +177,10 @@ describe('ProcessSupervisor', () => {
 
     vi.runAllTimers();
 
-    // Verify "continue\r" was written to PTY
+    // Verify "continue" and "\r" were written as separate calls
     const writeCalls = vi.mocked(mockPty.write).mock.calls.map(c => c[0]);
-    expect(writeCalls).toContain('continue\r');
+    expect(writeCalls).toContain('continue');
+    expect(writeCalls).toContain('\r');
   });
 
   it('suppresses re-detection during cooldown period', () => {

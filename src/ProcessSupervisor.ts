@@ -175,8 +175,10 @@ export class ProcessSupervisor extends EventEmitter {
    * Transitions: RUNNING -> LIMIT_DETECTED -> WAITING
    */
   #onLimitDetected(event: LimitEvent): void {
-    // Suppress false positives during post-resume cooldown
+    // Suppress false positives during post-resume cooldown.
+    // Reset the detector so it can fire again after cooldown expires.
     if (Date.now() < this.#cooldownUntil) {
+      this.#detector.reset();
       return;
     }
 
@@ -186,10 +188,10 @@ export class ProcessSupervisor extends EventEmitter {
     // Dismiss the /rate-limit-options interactive menu by selecting option 1
     // ("Stop and wait for limit to reset"). Option 1 is pre-selected, so Enter confirms it.
     // Send Enter multiple times — the menu can re-appear after the first selection.
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       setTimeout(() => {
         this.#writer!.write('\r');
-      }, 500 + i * 1000);
+      }, 100 + i * 100);
     }
 
     // Schedule the resume callback
@@ -225,7 +227,7 @@ export class ProcessSupervisor extends EventEmitter {
 
       this.#resetTime = null;
       this.#setState(SessionState.RUNNING);
-    }, 100);
+    }, 10);
   }
 
   /**
