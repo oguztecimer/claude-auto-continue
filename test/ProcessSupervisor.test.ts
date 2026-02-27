@@ -3,6 +3,7 @@ import type * as pty from 'node-pty';
 
 // We import from the module after mocking — will fail until ProcessSupervisor.ts exists
 import { ProcessSupervisor, SessionState } from '../src/ProcessSupervisor.js';
+import type { StateChangeEvent } from '../src/ProcessSupervisor.js';
 
 /**
  * Create a mock IPty where onData/onExit store their callbacks so tests
@@ -89,7 +90,7 @@ describe('ProcessSupervisor', () => {
     });
   });
 
-  it('PTY output is written to process.stdout', () => {
+  it('PTY output is written to process.stdout by default', () => {
     const mockPty = makeMockPty();
     const spawnFn = vi.fn().mockReturnValue(mockPty);
     const supervisor = new ProcessSupervisor({ spawnFn });
@@ -100,6 +101,21 @@ describe('ProcessSupervisor', () => {
     dataCallback!('hello from claude');
 
     expect(stdoutWriteSpy).toHaveBeenCalledWith('hello from claude');
+  });
+
+  it('PTY output routes to onOutput handler when provided', () => {
+    const mockPty = makeMockPty();
+    const spawnFn = vi.fn().mockReturnValue(mockPty);
+    const onOutput = vi.fn();
+    const supervisor = new ProcessSupervisor({ spawnFn, onOutput });
+    supervisor.spawn('claude', ['--continue']);
+
+    const { dataCallback } = getMockCallbacks(mockPty);
+    dataCallback!('hello from claude');
+
+    expect(onOutput).toHaveBeenCalledWith('hello from claude');
+    // Should NOT have written to stdout directly
+    expect(stdoutWriteSpy).not.toHaveBeenCalledWith('hello from claude');
   });
 
   it('PTY output feeds PatternDetector in RUNNING state and triggers state transition', () => {
@@ -223,7 +239,86 @@ describe('ProcessSupervisor', () => {
 
     // Still WAITING — detector.feed() is not called during WAITING, so no re-trigger
     expect(supervisor.state).toBe(SessionState.WAITING);
-    // Output still goes to stdout though
-    expect(stdoutWriteSpy).toHaveBeenCalledWith(RATE_LIMIT_TEXT);
+  });
+
+  describe('stateChange events', () => {
+    it('emits stateChange with LIMIT_DETECTED on rate limit detection', () => {
+      const mockPty = makeMockPty();
+      const spawnFn = vi.fn().mockReturnValue(mockPty);
+      const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0 });
+      supervisor.spawn('claude', ['--continue']);
+
+      const events: StateChangeEvent[] = [];
+      supervisor.on('stateChange', (e: StateChangeEvent) => events.push(e));
+
+      const { dataCallback } = getMockCallbacks(mockPty);
+      dataCallback!(RATE_LIMIT_TEXT);
+
+      // Should have emitted LIMIT_DETECTED then WAITING
+      expect(events.length).toBeGreaterThanOrEqual(2);
+      expect(events[0].state).toBe('LIMIT_DETECTED');
+      expect(events[1].state).toBe('WAITING');
+    });
+
+    it('emits stateChange with WAITING including resetTime', () => {
+      const mockPty = makeMockPty();
+      const spawnFn = vi.fn().mockReturnValue(mockPty);
+      const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0 });
+      supervisor.spawn('claude', ['--continue']);
+
+      const events: StateChangeEvent[] = [];
+      supervisor.on('stateChange', (e: StateChangeEvent) => events.push(e));
+
+      const { dataCallback } = getMockCallbacks(mockPty);
+      dataCallback!(RATE_LIMIT_TEXT);
+
+      const waitingEvent = events.find(e => e.state === 'WAITING');
+      expect(waitingEvent).toBeDefined();
+      // RATE_LIMIT_TEXT contains "3pm" — should parse to a Date
+      expect(waitingEvent!.resetTime).toBeInstanceOf(Date);
+    });
+
+    it('emits stateChange with RESUMING then RUNNING on resume', () => {
+      const mockPty = makeMockPty();
+      const spawnFn = vi.fn().mockReturnValue(mockPty);
+      const supervisor = new ProcessSupervisor({ spawnFn, safetyMs: 0 });
+      supervisor.spawn('claude', ['--continue']);
+
+      const events: StateChangeEvent[] = [];
+      supervisor.on('stateChange', (e: StateChangeEvent) => events.push(e));
+
+      const { dataCallback } = getMockCallbacks(mockPty);
+      dataCallback!('Claude usage limit reached.');
+
+      // Clear events from detection, focus on resume
+      events.length = 0;
+
+      vi.runAllTimers();
+
+      expect(events.length).toBeGreaterThanOrEqual(2);
+      expect(events[0].state).toBe('RESUMING');
+      expect(events[1].state).toBe('RUNNING');
+      // After resume, resetTime should be null
+      expect(events[1].resetTime).toBeNull();
+    });
+
+    it('emits stateChange with DEAD on PTY exit', () => {
+      const mockPty = makeMockPty();
+      const spawnFn = vi.fn().mockReturnValue(mockPty);
+      const onExitMock = vi.fn();
+      const supervisor = new ProcessSupervisor({ spawnFn, onExit: onExitMock });
+      supervisor.spawn('claude', ['--continue']);
+
+      const events: StateChangeEvent[] = [];
+      supervisor.on('stateChange', (e: StateChangeEvent) => events.push(e));
+
+      const { exitCallback } = getMockCallbacks(mockPty);
+      exitCallback!({ exitCode: 0 });
+
+      expect(events.length).toBeGreaterThanOrEqual(1);
+      const deadEvent = events.find(e => e.state === 'DEAD');
+      expect(deadEvent).toBeDefined();
+      expect(deadEvent!.resetTime).toBeNull();
+    });
   });
 });

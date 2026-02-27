@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import * as pty from 'node-pty';
 import { PatternDetector, LimitEvent } from './PatternDetector.js';
 import { Scheduler } from './Scheduler.js';
@@ -20,6 +21,12 @@ export const enum SessionState {
   RESUMING = 'RESUMING',
 }
 
+/** Payload emitted with the 'stateChange' event */
+export interface StateChangeEvent {
+  state: string;
+  resetTime: Date | null;
+}
+
 export interface ProcessSupervisorOptions {
   /** Override node-pty spawn function for testing (dependency injection) */
   spawnFn?: typeof pty.spawn;
@@ -29,6 +36,8 @@ export interface ProcessSupervisorOptions {
   safetyMs?: number;
   /** Override process.exit for testing. Default: process.exit */
   onExit?: (code: number) => void;
+  /** Override PTY output handler. Default: process.stdout.write */
+  onOutput?: (data: string) => void;
 }
 
 /**
@@ -37,24 +46,30 @@ export interface ProcessSupervisorOptions {
  * Spawns Claude Code in a real PTY, passes all I/O transparently, detects
  * usage-limit messages via PatternDetector, waits via Scheduler, and
  * auto-resumes via StdinWriter.
+ *
+ * Extends EventEmitter to broadcast 'stateChange' events for the display layer.
  */
-export class ProcessSupervisor {
+export class ProcessSupervisor extends EventEmitter {
   readonly #spawnFn: typeof pty.spawn;
   readonly #cooldownMs: number;
   readonly #detector: PatternDetector;
   readonly #scheduler: Scheduler;
   readonly #onExitCallback: (code: number) => void;
+  readonly #onOutput: (data: string) => void;
 
   #state: SessionState = SessionState.RUNNING;
   #writer: StdinWriter | null = null;
   #cooldownUntil = 0;
+  #resetTime: Date | null = null;
 
   constructor(options: ProcessSupervisorOptions = {}) {
+    super();
     this.#spawnFn = options.spawnFn ?? pty.spawn;
     this.#cooldownMs = options.cooldownMs ?? 30_000;
     this.#detector = new PatternDetector();
     this.#scheduler = new Scheduler(options.safetyMs ?? 5_000);
     this.#onExitCallback = options.onExit ?? ((code: number) => process.exit(code));
+    this.#onOutput = options.onOutput ?? ((data: string) => { process.stdout.write(data); });
 
     // Listen for rate-limit detections
     this.#detector.on('limit', (event: LimitEvent) => this.#onLimitDetected(event));
@@ -63,6 +78,19 @@ export class ProcessSupervisor {
   /** Current session state — exposed for Phase 3 status display and testing */
   get state(): SessionState {
     return this.#state;
+  }
+
+  /**
+   * Set state and emit a 'stateChange' event.
+   */
+  #setState(newState: SessionState | 'DEAD'): void {
+    if (newState !== 'DEAD') {
+      this.#state = newState;
+    }
+    this.emit('stateChange', {
+      state: newState,
+      resetTime: this.#resetTime,
+    } satisfies StateChangeEvent);
   }
 
   /**
@@ -82,9 +110,9 @@ export class ProcessSupervisor {
 
     this.#writer = new StdinWriter(ptyProcess);
 
-    // --- PTY output: pass to stdout, optionally feed detector ---
+    // --- PTY output: pass to output handler, optionally feed detector ---
     ptyProcess.onData((data: string) => {
-      process.stdout.write(data);
+      this.#onOutput(data);
       // Only feed the detector when RUNNING — ignore output in all other states
       if (this.#state === SessionState.RUNNING) {
         this.#detector.feed(data);
@@ -95,6 +123,7 @@ export class ProcessSupervisor {
     ptyProcess.onExit((e: { exitCode: number; signal?: number }) => {
       this.#writer!.markDead();
       this.#scheduler.cancel();
+      this.#setState('DEAD');
       // Allow Node.js event loop to drain (stdin will no longer hold the process open)
       if (process.stdin.isTTY) {
         process.stdin.unref();
@@ -131,16 +160,13 @@ export class ProcessSupervisor {
       return;
     }
 
-    this.#state = SessionState.LIMIT_DETECTED;
-    process.stderr.write(
-      `[SessionState] LIMIT_DETECTED (resets: ${event.resetTime?.toISOString() ?? 'unknown'})\n`
-    );
+    this.#resetTime = event.resetTime;
+    this.#setState(SessionState.LIMIT_DETECTED);
 
     // Schedule the resume callback
     this.#scheduler.scheduleAt(event.resetTime, () => this.#onResumeReady());
 
-    this.#state = SessionState.WAITING;
-    process.stderr.write('[SessionState] WAITING\n');
+    this.#setState(SessionState.WAITING);
   }
 
   /**
@@ -148,8 +174,7 @@ export class ProcessSupervisor {
    * Transitions: WAITING -> RESUMING -> RUNNING
    */
   #onResumeReady(): void {
-    this.#state = SessionState.RESUMING;
-    process.stderr.write('[SessionState] RESUMING\n');
+    this.#setState(SessionState.RESUMING);
 
     // Send Escape to dismiss any rate-limit UI overlay
     this.#writer!.write('\x1b');
@@ -163,8 +188,8 @@ export class ProcessSupervisor {
     // Re-arm the detector for the next potential rate-limit cycle
     this.#detector.reset();
 
-    this.#state = SessionState.RUNNING;
-    process.stderr.write('[SessionState] RUNNING\n');
+    this.#resetTime = null;
+    this.#setState(SessionState.RUNNING);
   }
 
   /**
