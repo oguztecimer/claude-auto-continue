@@ -135,10 +135,25 @@ export class ProcessSupervisor extends EventEmitter {
     if (process.stdin.isTTY) {
       process.stdin.setRawMode(true);
       process.stdin.resume();
+      let lastCtrlC = 0;
       process.stdin.on('data', (chunk: Buffer) => {
+        const str = chunk.toString('binary');
+
+        // Detect Ctrl+C (0x03) — double press within 1s exits clac
+        if (str === '\x03') {
+          const now = Date.now();
+          if (now - lastCtrlC < 1000) {
+            // Double Ctrl+C — force exit
+            this.shutdown();
+            this.#onExitCallback(130);
+            return;
+          }
+          lastCtrlC = now;
+        }
+
         // Forward keystrokes to PTY only during RUNNING state
         if (this.#state === SessionState.RUNNING) {
-          this.#writer!.write(chunk.toString('binary'));
+          this.#writer!.write(str);
         }
         // Silently discard during WAITING / RESUMING / LIMIT_DETECTED
       });
