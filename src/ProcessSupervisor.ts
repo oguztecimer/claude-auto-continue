@@ -123,12 +123,9 @@ export class ProcessSupervisor extends EventEmitter {
         this.#menuVisible = false;
       }
 
-      if (this.#state === SessionState.RUNNING || this.#state === SessionState.RESUMING) {
+      if (this.#state === SessionState.RUNNING) {
         this.#onOutput(data);
-        // Only feed detector during RUNNING — RESUMING output is just the "continue" echo
-        if (this.#state === SessionState.RUNNING) {
-          this.#detector.feed(data);
-        }
+        this.#detector.feed(data);
       }
     });
 
@@ -164,11 +161,11 @@ export class ProcessSupervisor extends EventEmitter {
           lastCtrlC = now;
         }
 
-        // Forward keystrokes to PTY during RUNNING and RESUMING states
-        if (this.#state === SessionState.RUNNING || this.#state === SessionState.RESUMING) {
+        // Forward user keystrokes to PTY only during RUNNING state
+        if (this.#state === SessionState.RUNNING) {
           this.#writer!.write(str);
         }
-        // Silently discard during WAITING / LIMIT_DETECTED
+        // Silently discard during WAITING / RESUMING / LIMIT_DETECTED
       });
     }
 

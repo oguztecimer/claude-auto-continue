@@ -183,7 +183,7 @@ function main(): void {
         process.stdout.write('\x1b[2J\x1b[3J\x1b[H');
         process.stdout.write(card.render({ resetTime, cwd }));
       }, 1000);
-    } else if (state === 'RUNNING' || state === 'RESUMING' || state === 'DEAD') {
+    } else if (state === 'RUNNING' || state === 'DEAD') {
       setTerminalTitle('');
       currentResetTime = null;
 
