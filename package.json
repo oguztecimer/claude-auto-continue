@@ -1,6 +1,6 @@
 {
   "name": "claude-auto-continue",
-  "version": "1.0.39",
+  "version": "1.0.40",
   "description": "Automatically resumes Claude Code sessions after usage limits reset",
   "main": "dist/index.js",
   "bin": {
@@ -40,6 +40,7 @@
     "url": "https://github.com/oguztecimer/claude-auto-continue/issues"
   },
   "dependencies": {
+    "claude-auto-continue": "^1.0.39",
     "node-pty": "^1.1.0",
     "strip-ansi": "^6.0.1"
   },

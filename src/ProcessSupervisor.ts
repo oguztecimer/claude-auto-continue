@@ -67,7 +67,7 @@ export class ProcessSupervisor extends EventEmitter {
     super();
     this.#spawnFn = options.spawnFn ?? pty.spawn;
     this.#detector = new PatternDetector();
-    this.#scheduler = new Scheduler(options.safetyMs ?? 5_000);
+    this.#scheduler = new Scheduler(options.safetyMs ?? 0);
     this.#onExitCallback = options.onExit ?? ((code: number) => process.exit(code));
     this.#onOutput = options.onOutput ?? ((data: string) => { process.stdout.write(data); });
     this.#overrideCooldownSec = options.overrideCooldownSec;
@@ -165,11 +165,7 @@ export class ProcessSupervisor extends EventEmitter {
           lastCtrlC = now;
         }
 
-        // Forward user keystrokes to PTY only during RUNNING state
-        if (this.#state === SessionState.RUNNING) {
-          this.#writer!.write(str);
-        }
-        // Silently discard during WAITING / RESUMING / LIMIT_DETECTED
+        this.#writer!.write(str);
       });
     }
 
@@ -196,10 +192,10 @@ export class ProcessSupervisor extends EventEmitter {
       }, 100 + i * 100);
     }
 
-    // Schedule the resume callback
+    // Schedule the resume callback — add 5s buffer so countdown hits 0 then resumes immediately
     const scheduleTime = this.#overrideCooldownSec !== undefined
       ? new Date(Date.now() + this.#overrideCooldownSec * 1000)
-      : event.resetTime;
+      : new Date((event.resetTime?.getTime() ?? Date.now()) + 5000);
     this.#resetTime = scheduleTime;
     this.#scheduler.scheduleAt(scheduleTime, () => this.#onResumeReady());
 
