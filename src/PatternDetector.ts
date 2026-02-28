@@ -18,9 +18,10 @@ export interface LimitEvent {
  *   Format B (mid-era): "Claude usage limit reached. Your limit will reset at 3pm (America/Santiago)."
  *   Format C: "You've hit your limit · resets 4pm (Europe/Berlin)"
  *   Format D (current): "You're out of extra usage · resets 4am (Europe/Istanbul)"
+ *   Format E (menu): "Stop and wait for limit to reset" (the interactive menu itself)
  */
 const DEFAULT_PATTERN =
-  /(?:Claude(?:\s+AI)?\s+usage\s+limit\s+reached[|.]|you(?:'ve| have)\s+hit\s+your\s+limit|you(?:'re| are)\s+out\s+of\s+extra\s+usage)/i;
+  /(?:Claude(?:\s+AI)?\s+usage\s+limit\s+reached[|.]|you(?:'ve| have)\s+hit\s+your\s+limit|you(?:'re| are)\s+out\s+of\s+extra\s+usage|Stop\s+and\s+wait\s+for\s+limit\s+to\s+reset)/i;
 
 /** Matches a 10+ digit unix timestamp after a pipe: |1760000400 */
 const UNIX_TS_PATTERN = /\|(\d{10,})/;

@@ -111,9 +111,7 @@ export class ProcessSupervisor extends EventEmitter {
 
     this.#writer = new StdinWriter(ptyProcess);
 
-    // --- PTY output: pass to output handler and detector only during RUNNING ---
-    // During WAITING/LIMIT_DETECTED, the countdown card owns the terminal display.
-    // Forwarding PTY output (e.g. menu dismissal responses) would dirty the screen.
+    // --- PTY output: always forward to display, only feed detector during RUNNING ---
     ptyProcess.onData((data: string) => {
       // Track "What do you want to do?" menu visibility across all states
       const clean = stripAnsi(data);
@@ -123,8 +121,8 @@ export class ProcessSupervisor extends EventEmitter {
         this.#menuVisible = false;
       }
 
+      this.#onOutput(data);
       if (this.#state === SessionState.RUNNING) {
-        this.#onOutput(data);
         this.#detector.feed(data);
       }
     });
@@ -176,19 +174,8 @@ export class ProcessSupervisor extends EventEmitter {
     }
 
     // --- Terminal resize forwarding ---
-    // Only forward resizes during RUNNING state to avoid scrambling Claude's
-    // display while the alternate screen (countdown) is active.
     process.stdout.on('resize', () => {
-      if (this.#state === SessionState.RUNNING) {
-        ptyProcess.resize(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
-      }
-    });
-
-    // Sync PTY size when returning to RUNNING state (in case terminal was resized during WAITING)
-    this.on('stateChange', (event: { state: string }) => {
-      if (event.state === 'RUNNING') {
-        ptyProcess.resize(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
-      }
+      ptyProcess.resize(process.stdout.columns ?? 80, process.stdout.rows ?? 24);
     });
   }
 
