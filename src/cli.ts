@@ -189,7 +189,13 @@ function main(): void {
 
       if (ownsTerminal) {
         ownsTerminal = false;
+        // Leave alternate screen buffer (restores saved main screen)
         process.stdout.write('\x1b[?1049l');
+        // Clear the restored stale content — Claude Code's state has changed
+        // while we were on the alternate screen, so the restored content is
+        // out of sync. Clearing lets Claude redraw cleanly after the resize
+        // signal (sent by ProcessSupervisor on RUNNING state change).
+        process.stdout.write('\x1b[2J\x1b[3J\x1b[H');
       }
     }
   });

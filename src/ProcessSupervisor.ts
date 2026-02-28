@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import * as pty from 'node-pty';
+import stripAnsi from 'strip-ansi';
 import { PatternDetector, LimitEvent } from './PatternDetector.js';
 import { Scheduler } from './Scheduler.js';
 import { StdinWriter } from './StdinWriter.js';
@@ -60,6 +61,7 @@ export class ProcessSupervisor extends EventEmitter {
   #state: SessionState = SessionState.RUNNING;
   #writer: StdinWriter | null = null;
   #resetTime: Date | null = null;
+  #menuVisible: boolean = false;
 
   constructor(options: ProcessSupervisorOptions = {}) {
     super();
@@ -113,9 +115,20 @@ export class ProcessSupervisor extends EventEmitter {
     // During WAITING/LIMIT_DETECTED, the countdown card owns the terminal display.
     // Forwarding PTY output (e.g. menu dismissal responses) would dirty the screen.
     ptyProcess.onData((data: string) => {
-      if (this.#state === SessionState.RUNNING) {
+      // Track "What do you want to do?" menu visibility across all states
+      const clean = stripAnsi(data);
+      if (/What do you want to do\?/.test(clean)) {
+        this.#menuVisible = true;
+      } else if (this.#menuVisible && clean.trim().length > 0) {
+        this.#menuVisible = false;
+      }
+
+      if (this.#state === SessionState.RUNNING || this.#state === SessionState.RESUMING) {
         this.#onOutput(data);
-        this.#detector.feed(data);
+        // Only feed detector during RUNNING — RESUMING output is just the "continue" echo
+        if (this.#state === SessionState.RUNNING) {
+          this.#detector.feed(data);
+        }
       }
     });
 
@@ -151,11 +164,11 @@ export class ProcessSupervisor extends EventEmitter {
           lastCtrlC = now;
         }
 
-        // Forward keystrokes to PTY only during RUNNING state
-        if (this.#state === SessionState.RUNNING) {
+        // Forward keystrokes to PTY during RUNNING and RESUMING states
+        if (this.#state === SessionState.RUNNING || this.#state === SessionState.RESUMING) {
           this.#writer!.write(str);
         }
-        // Silently discard during WAITING / RESUMING / LIMIT_DETECTED
+        // Silently discard during WAITING / LIMIT_DETECTED
       });
     }
 
@@ -206,23 +219,60 @@ export class ProcessSupervisor extends EventEmitter {
   /**
    * Called by Scheduler when the reset time has elapsed.
    * Transitions: WAITING -> RESUMING -> RUNNING
+   *
+   * Polls every 10ms to ensure the "What do you want to do?" menu has
+   * disappeared before typing "continue". This prevents sending input
+   * while the interactive menu is still active.
    */
   #onResumeReady(): void {
     this.#setState(SessionState.RESUMING);
 
-    // Type "continue" then press Enter after a short delay to resume the session.
-    // Sending as a single write ('continue\r') causes the \r to be treated as part
-    // of the text buffer rather than a discrete Enter keypress.
-    this.#writer!.write('continue');
-    setTimeout(() => {
-      this.#writer!.write('\r');
+    const sendContinue = () => {
+      // Type "continue" then press Enter after a short delay to resume the session.
+      // Sending as a single write ('continue\r') causes the \r to be treated as part
+      // of the text buffer rather than a discrete Enter keypress.
+      this.#writer!.write('continue');
+      setTimeout(() => {
+        this.#writer!.write('\r');
 
-      // Re-arm the detector for the next potential rate-limit cycle
-      this.#detector.reset();
+        // Re-arm the detector for the next potential rate-limit cycle
+        this.#detector.reset();
 
-      this.#resetTime = null;
-      this.#setState(SessionState.RUNNING);
+        this.#menuVisible = false;
+        this.#resetTime = null;
+        this.#setState(SessionState.RUNNING);
+      }, 10);
+    };
+
+    // If menu is not visible, send continue immediately
+    if (!this.#menuVisible) {
+      sendContinue();
+      return;
+    }
+
+    // Menu is visible — poll every 10ms, send Enter to dismiss while visible
+    let sent = false;
+    const interval = setInterval(() => {
+      if (sent) return;
+      if (this.#menuVisible) {
+        // Menu still showing — press Enter to dismiss it
+        this.#writer!.write('\r');
+      } else {
+        sent = true;
+        clearInterval(interval);
+        sendContinue();
+      }
     }, 10);
+
+    // Safety timeout: don't wait forever (10 seconds)
+    setTimeout(() => {
+      if (!sent) {
+        sent = true;
+        clearInterval(interval);
+        this.#menuVisible = false;
+        sendContinue();
+      }
+    }, 10_000);
   }
 
   /**
