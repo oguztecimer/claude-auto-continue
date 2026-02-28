@@ -149,11 +149,17 @@ export class ProcessSupervisor extends EventEmitter {
       process.stdin.on('data', (chunk: Buffer) => {
         const str = chunk.toString('binary');
 
-        // Detect Ctrl+C (0x03) — double press within 1s exits clac
+        // Detect Ctrl+C (0x03)
         if (str === '\x03') {
+          // During cooldown/resuming — single Ctrl+C exits immediately
+          if (this.#state !== SessionState.RUNNING) {
+            this.shutdown();
+            this.#onExitCallback(130);
+            return;
+          }
+          // During RUNNING — double press within 1s exits clac
           const now = Date.now();
           if (now - lastCtrlC < 1000) {
-            // Double Ctrl+C — force exit
             this.shutdown();
             this.#onExitCallback(130);
             return;
