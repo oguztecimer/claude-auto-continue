@@ -142,11 +142,11 @@ export class ProcessSupervisor extends EventEmitter {
     // --- Stdin forwarding (only in a real TTY environment) ---
     if (process.stdin.isTTY) {
       process.stdin.setRawMode(true);
+      // Decode complete UTF-8 characters before forwarding them to node-pty.
+      process.stdin.setEncoding('utf8');
       process.stdin.resume();
       let lastCtrlC = 0;
-      process.stdin.on('data', (chunk: Buffer) => {
-        const str = chunk.toString('binary');
-
+      process.stdin.on('data', (str: string) => {
         // Detect Ctrl+C (0x03)
         if (str === '\x03') {
           // During cooldown/resuming — single Ctrl+C exits immediately

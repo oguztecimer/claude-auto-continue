@@ -118,6 +118,47 @@ describe('ProcessSupervisor', () => {
     expect(stdoutWriteSpy).not.toHaveBeenCalledWith('hello from claude');
   });
 
+  it('forwards non-ASCII stdin as UTF-8 text', () => {
+    const stdin = process.stdin as NodeJS.ReadStream & {
+      isTTY?: boolean;
+      setRawMode: (mode: boolean) => NodeJS.ReadStream;
+    };
+    Object.defineProperty(stdin, 'isTTY', { configurable: true, value: true });
+    Object.defineProperty(stdin, 'setRawMode', {
+      configurable: true,
+      value: vi.fn().mockReturnValue(stdin),
+    });
+
+    const setEncodingSpy = vi.spyOn(stdin, 'setEncoding').mockReturnValue(stdin);
+    const resumeSpy = vi.spyOn(stdin, 'resume').mockReturnValue(stdin);
+    let stdinDataCallback: ((data: string) => void) | undefined;
+    const stdinOnSpy = vi.spyOn(stdin, 'on').mockImplementation(((event: string, listener: (...args: unknown[]) => void) => {
+      if (event === 'data') {
+        stdinDataCallback = listener as (data: string) => void;
+      }
+      return stdin;
+    }) as typeof stdin.on);
+
+    try {
+      const mockPty = makeMockPty();
+      const spawnFn = vi.fn().mockReturnValue(mockPty);
+      const supervisor = new ProcessSupervisor({ spawnFn });
+      supervisor.spawn('claude', ['--continue']);
+
+      expect(setEncodingSpy).toHaveBeenCalledWith('utf8');
+      expect(stdinDataCallback).toBeDefined();
+
+      stdinDataCallback!('中文输入测试');
+      expect(mockPty.write).toHaveBeenCalledWith('中文输入测试');
+    } finally {
+      stdinOnSpy.mockRestore();
+      resumeSpy.mockRestore();
+      setEncodingSpy.mockRestore();
+      delete stdin.isTTY;
+      delete stdin.setRawMode;
+    }
+  });
+
   it('PTY output feeds PatternDetector in RUNNING state and triggers state transition', () => {
     const mockPty = makeMockPty();
     const spawnFn = vi.fn().mockReturnValue(mockPty);
